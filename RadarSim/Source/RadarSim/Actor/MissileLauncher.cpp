@@ -18,13 +18,16 @@ void AMissileLauncher::BeginPlay()
 {
 	Super::BeginPlay();
 
+	fireRate = fireRateValue;
+	ammoInLauncher = maxAmmo;
+	reloadTime = reloadTimeValue;
 }
 
 // Called every frame
 void AMissileLauncher::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	FireMissile();
+	FireMissile(DeltaTime);
 }
 
 bool AMissileLauncher::ReceiveAction(class AActor* _target)
@@ -34,18 +37,24 @@ bool AMissileLauncher::ReceiveAction(class AActor* _target)
 	return true;
 }
 
-bool AMissileLauncher::FireMissile()
+bool AMissileLauncher::FireMissile(float _dt)
 {
-	if (canShoot && targetArray.Num() > 0)
+	if (canShoot && (!is_reloading && ammoInLauncher > 0) && targetArray.Num() > 0)
 	{
 		bool shotFired = false;
 		if (targetArray[0])
 		{
 
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("target was hit %s"), *targetArray[0]->GetName()));
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("target was aimed %s"), *targetArray[0]->GetName()));
 
 			SpawnMissile();
 			shotFired = true;
+			canShoot = false;
+			ammoInLauncher--;
+			if (ammoInLauncher <= 0)
+			{
+				is_reloading = true;
+			}
 		}
 
 		if (shotFired)
@@ -54,13 +63,37 @@ bool AMissileLauncher::FireMissile()
 		}
 	}
 
+
+	if (!canShoot)
+	{
+		fireRate -= _dt;
+
+		if (fireRate <= 0)
+		{
+			fireRate = fireRateValue;
+			canShoot = true;
+		}
+	}
+
+	if (is_reloading)
+	{
+		reloadTime -= _dt;
+		GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Magenta, FString::Printf(TEXT("Reloading %f"), reloadTime));
+		if (reloadTime <= 0)
+		{
+			is_reloading = false;
+			ammoInLauncher = 6;
+			reloadTime = reloadTimeValue;
+		}
+	}
+
+
 	if (targetArray.Num() > 0)
 	{
-
 		GEngine->AddOnScreenDebugMessage(-0, 5.f, FColor::Red, FString::Printf(TEXT("target Array Missile Launcher")));
 		for (AActor* target : targetArray)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Red, FString::Printf(TEXT("Actor [%s]"), *target->GetName()));
+			GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Red, FString::Printf(TEXT("Actor In Array Missile Launcher [%s]"), *target->GetName()));
 		}
 	}
 

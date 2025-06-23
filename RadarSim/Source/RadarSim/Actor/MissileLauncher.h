@@ -35,14 +35,25 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AMissile> missileType;
+
+
 	UPROPERTY(EditAnywhere)
-	float fireRate = 5.f;
-		UPROPERTY(EditAnywhere)
-	float reloadTime = 5.f;
+	int32 maxAmmo = 6;
+	int32 ammoInLauncher;
+
+	float fireRate = 0.f;
+	UPROPERTY(EditAnywhere)
+	float fireRateValue = 1.5f;
+
+
+	float reloadTime = 0.f;
+	UPROPERTY(EditAnywhere)
+	float reloadTimeValue = 5.f;
+	bool is_reloading =false;
 
 	bool canShoot = true;
 
-	bool FireMissile();
+	bool FireMissile(float _dt);
 	void SpawnMissile();
 
 };

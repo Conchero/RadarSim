@@ -50,10 +50,6 @@ void ARadar::Tick(float DeltaTime)
 
 	for (AActor* actor : overlappingActors)
 	{
-		if (actor != this)
-			GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Red, actor->GetName());
-		
-
 		if (CheckPresenceInActiveZone(actor->GetActorLocation()))
 		{
 
@@ -61,11 +57,7 @@ void ARadar::Tick(float DeltaTime)
 			{
 				decisionComponent->AddNoiseEntry(actor);
 			}
-
-			GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Green, FString::Printf(TEXT("Actor in zone at angle %f"), GetAngleFromMainAxisToDetectedNoise(actor->GetActorLocation())));
-
 		}
-
 	}
 
 
@@ -103,12 +95,12 @@ float ARadar::GetAngleFromMainAxisToDetectedNoise(FVector _noiseLocation)
 
 void ARadar::CreateFalseNoise()
 {
-	if (FMath::RandRange(0, 100) < noiseRandChance)
+	/*if (FMath::RandRange(0, 100) < noiseRandChance)
 	{
 		if (decisionComponent)
 		{
 		}
-	}
+	}*/
 }
 
 void ARadar::ResizeAreaActionVizualizer()
