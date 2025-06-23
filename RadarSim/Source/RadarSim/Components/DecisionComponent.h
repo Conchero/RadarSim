@@ -22,7 +22,10 @@ protected:
 
 
 	void RemoveNoiseEntry(class AActor* _noise);
-	void SendAction();
+	void NoiseFilter(float _dt);
+	void ConfirmTarget(float _dt);
+
+
 public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -36,12 +39,20 @@ private:
 
 TMap<class AActor*, float> detectedNoiseMap;
 UPROPERTY(EditAnywhere)
-float timeBeforeLock;
+float timeBeforeLock = 3.f;
 TArray<class AActor*> lockedTargetArray;
+TArray<class AActor*> aimedTargetArray;
 
 UPROPERTY(EditInstanceOnly)
 class ARadar* detectionOwner;
 UPROPERTY(EditInstanceOnly)
 class AMissileLauncher* actionReceiver;
+
+FString detectionTag = "detectedEntity";
+int32 currentDetectedIndex = 1;
+
+UPROPERTY(EditAnywhere)
+float noiseFilterTimerValue = 0.8f;
+float noiseFilterTimer = 0.f;
 
 };

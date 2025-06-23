@@ -24,6 +24,9 @@ protected:
 
 	float GetAngleFromMainAxisToDetectedNoise(FVector _noiseLocation);
 
+
+	void CreateFalseNoise();
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -31,6 +34,9 @@ public:
 
 
 private:
+
+int noiseRandChance = 10;
+
 
 UFUNCTION(BlueprintCallable)
 void ResizeAreaActionVizualizer();

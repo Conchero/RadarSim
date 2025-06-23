@@ -23,7 +23,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void ReceiveAction(class AActor* _targetLocation);
+	bool ReceiveAction(class AActor* _targetLocation);
 
 private:
 
@@ -37,10 +37,12 @@ private:
 	TSubclassOf<class AMissile> missileType;
 	UPROPERTY(EditAnywhere)
 	float fireRate = 5.f;
+		UPROPERTY(EditAnywhere)
+	float reloadTime = 5.f;
 
 	bool canShoot = true;
 
-	void FireMissile(class AMissile* _missile);
+	bool FireMissile();
 	void SpawnMissile();
 
 };

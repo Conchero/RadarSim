@@ -57,6 +57,11 @@ void ARadar::Tick(float DeltaTime)
 		if (CheckPresenceInActiveZone(actor->GetActorLocation()))
 		{
 
+			if (decisionComponent)
+			{
+				decisionComponent->AddNoiseEntry(actor);
+			}
+
 			GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Green, FString::Printf(TEXT("Actor in zone at angle %f"), GetAngleFromMainAxisToDetectedNoise(actor->GetActorLocation())));
 
 		}
@@ -92,10 +97,18 @@ float ARadar::GetAngleFromMainAxisToDetectedNoise(FVector _noiseLocation)
 	float dotProduct = FVector::DotProduct(mainDirection, noiseDirection);
 
 	float angle  = FMath::Acos(FVector::DotProduct(mainDirection, noiseDirection));
-	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Green, FString::Printf(TEXT("Angle with Actor in zone at angle %f"), angle));
-
 	return FMath::Abs(angle*180/3.14);
 	
+}
+
+void ARadar::CreateFalseNoise()
+{
+	if (FMath::RandRange(0, 100) < noiseRandChance)
+	{
+		if (decisionComponent)
+		{
+		}
+	}
 }
 
 void ARadar::ResizeAreaActionVizualizer()
