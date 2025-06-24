@@ -26,14 +26,20 @@ protected:
 	TSubclassOf<class AMissile> GetMissileType() { return missileType; }
 
 	bool MissileManagement(float _dt);
+	void FireRateManagement(float _dt);
+	void ReloadManagement(float _dt);
 
 	UFUNCTION(BlueprintCallable)
 	void GetMissileAttachedToMissileLauncherFromStart(TArray<class AMissile*> missiles);
 
 
+	void CanSendMissile();
 	void LaunchMissile();
-
 	void Reload();
+
+
+
+
 
 
 public:
