@@ -33,6 +33,7 @@ protected:
 
 	void LaunchMissile();
 
+	void Reload();
 
 
 public:
@@ -70,6 +71,7 @@ protected:
 
 	UPROPERTY(VisibleInstanceOnly, Category="Missile")
 	TArray<class AMissile*> missileActorArray;
+	UPROPERTY(VisibleInstanceOnly, Category="Missile")
 	TArray<FTransform> missileRelativeTransform;
 
 

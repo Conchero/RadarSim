@@ -47,26 +47,18 @@ bool AMissileLauncher::ReceiveAction(class AActor* _target)
 
 bool AMissileLauncher::MissileManagement(float _dt)
 {
-	if (canShoot && (!is_reloading && missileActorArray.Num() > 0) && targetArray.Num() > 0)
-	{
-		bool shotFired = false;
-		if (targetArray[0])
-		{
+	CanSendMissile();
+	FireRateManagement(_dt);
+	ReloadManagement(_dt);
+	return true;
+}
 
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("target was aimed %s"), *targetArray[0]->GetName()));
 
-			shotFired = true;
-			canShoot = false;
 
-			LaunchMissile();
-		}
 
-		if (shotFired)
-		{
-			targetArray.RemoveAt(0);
-		}
-	}
 
+void AMissileLauncher::FireRateManagement(float _dt)
+{
 
 	if (!canShoot)
 	{
@@ -78,35 +70,23 @@ bool AMissileLauncher::MissileManagement(float _dt)
 			canShoot = true;
 		}
 	}
+}
 
+void AMissileLauncher::ReloadManagement(float _dt)
+{
 	if (is_reloading)
 	{
 		reloadTime -= _dt;
 		GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Magenta, FString::Printf(TEXT("Reloading %f"), reloadTime));
 		if (reloadTime <= 0)
 		{
+			Reload();
 			is_reloading = false;
 			reloadTime = reloadTimeValue;
 		}
 	}
 
-
-	if (targetArray.Num() > 0)
-	{
-		GEngine->AddOnScreenDebugMessage(-0, 5.f, FColor::Red, FString::Printf(TEXT("target Array Missile Launcher")));
-		for (AActor* target : targetArray)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Red, FString::Printf(TEXT("Actor In Array Missile Launcher [%s]"), *target->GetName()));
-		}
-	}
-
-	return true;
-
 }
-
-
-
-
 
 void AMissileLauncher::GetMissileAttachedToMissileLauncherFromStart(TArray<class AMissile*> missiles)
 {
@@ -128,6 +108,32 @@ void AMissileLauncher::GetMissileAttachedToMissileLauncherFromStart(TArray<class
 	}
 }
 
+
+
+void AMissileLauncher::CanSendMissile()
+{
+	if (canShoot && (!is_reloading && missileActorArray.Num() > 0) && targetArray.Num() > 0)
+	{
+		bool shotFired = false;
+		if (targetArray[0])
+		{
+
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("target was aimed %s"), *targetArray[0]->GetName()));
+
+			shotFired = true;
+			canShoot = false;
+
+			LaunchMissile();
+		}
+
+		if (shotFired)
+		{
+			targetArray.RemoveAt(0);
+		}
+	}
+}
+
+
 void AMissileLauncher::LaunchMissile()
 {
 
@@ -139,15 +145,41 @@ void AMissileLauncher::LaunchMissile()
 	{
 		AMissile* missileToDestroy = missileActorArray[lastIndex];
 		missileActorArray.RemoveAt(lastIndex);
-		
+
 		if (missileToDestroy)
-		missileToDestroy->Destroy();
+			missileToDestroy->Destroy();
 	}
 
 
 	if (missileActorArray.Num() <= 0)
-	is_reloading = true;
+		is_reloading = true;
 
 }
 
+void AMissileLauncher::Reload()
+{
+
+	if (missileRelativeTransform.Num() <= 0)
+		return;
+
+
+	for (int i = 0; i < missileRelativeTransform.Num(); i++)
+	{
+
+
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Oh la la")));
+
+
+		AMissile* missileToSpawn = GetWorld()->SpawnActor<AMissile>(missileType, missileRelativeTransform[i].GetLocation(), missileRelativeTransform[i].GetRotation().Rotator(), FActorSpawnParameters());
+
+		if (missileToSpawn)
+		{
+
+			FAttachmentTransformRules attachRule = FAttachmentTransformRules(EAttachmentRule::KeepRelative, EAttachmentRule::KeepRelative, EAttachmentRule::KeepWorld, true);
+			missileToSpawn->AttachToComponent(missileLauncherMesh, attachRule);
+			missileActorArray.Add(missileToSpawn);
+		}
+	}
+
+}
 
