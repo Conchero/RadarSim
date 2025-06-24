@@ -19,27 +19,41 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UFUNCTION(BlueprintImplementableEvent, CallInEditor)
+	void SpawnMissile();
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	TSubclassOf<class AMissile> GetMissileType() { return missileType; }
+
+	bool MissileManagement(float _dt);
+
+	UFUNCTION(BlueprintCallable)
+	void GetMissileAttachedToMissileLauncherFromStart(TArray<class AMissile*> missiles);
+
+
+	void LaunchMissile();
+
+
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	bool ReceiveAction(class AActor* _targetLocation);
+protected:
 
-private:
-
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	class UStaticMeshComponent* missileLauncherMesh;
 
-	UPROPERTY(EditAnywhere, Category = MapsAndSets)
+	UPROPERTY(VisibleAnywhere, Category = MapsAndSets)
 	TArray<class AActor*> targetArray;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Missile")
 	TSubclassOf<class AMissile> missileType;
 
-
-	UPROPERTY(EditAnywhere)
-	int32 maxAmmo = 6;
-	int32 ammoInLauncher;
+	//UPROPERTY(EditAnywhere)
+	//int32 maxAmmo = 0;
+	//int32 ammoInLauncher;
 
 	float fireRate = 0.f;
 	UPROPERTY(EditAnywhere)
@@ -53,7 +67,10 @@ private:
 
 	bool canShoot = true;
 
-	bool FireMissile(float _dt);
-	void SpawnMissile();
+
+	UPROPERTY(VisibleInstanceOnly, Category="Missile")
+	TArray<class AMissile*> missileActorArray;
+	TArray<FTransform> missileRelativeTransform;
+
 
 };

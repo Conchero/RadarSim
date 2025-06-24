@@ -10,24 +10,37 @@ UCLASS()
 class RADARSIM_API AMissile : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	AMissile();
 
-	void SetTarget(class AActor* _target) {targetLocation = _target;};
+	void SetTarget(class AActor* _target) { targetLocation = _target; };
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	class AActor* targetLocation;
-	
+
+
+private:
+
 	UPROPERTY(EditAnywhere)
 	class UProjectileMovementComponent* projectileMovementComponent;
-		UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere)
 	class UStaticMeshComponent* missileMesh;
+
+	UPROPERTY(EditAnywhere)
+	class UBoxComponent* boxCollision;
+
+	UFUNCTION()
+	 void OnComponentBeginOverlap_Action(class UPrimitiveComponent* OverlappedComponent, class AActor* OtherActor ,class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+
+
+
 
 };
