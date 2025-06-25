@@ -19,7 +19,9 @@ public class RadarSim : ModuleRules
         "SlateCore",
         "EditorFramework",
         "MainFrame",
-        "PropertyEditor"
+        "PropertyEditor",
+                "AIModule",         
+            "NavigationSystem"
         });
     }
 }

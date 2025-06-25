@@ -4,6 +4,9 @@
 #include "../../Actor/Projectiles/Missile.h"
 #include "Components/SceneComponent.h"
 #include "Components/BoxComponent.h"
+#include "GameFramework/ProjectileMovementComponent.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "../Enemies/Drones.h"
 
 // Sets default values
 AMissile::AMissile()
@@ -22,6 +25,25 @@ AMissile::AMissile()
 	boxCollision->SetupAttachment(RootComponent);
 	boxCollision->SetCollisionResponseToAllChannels(ECR_Overlap);
 
+	projectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>("Projectile Movement Component");
+
+}
+
+void AMissile::OnTargetSent()
+{
+	projectileMovementComponent->ProjectileGravityScale = 1.0;
+	projectileMovementComponent->AddForce((GetActorForwardVector() * (initialImpulseForce_Meter * 1000) ) );
+}
+
+void AMissile::SetTarget(AActor* _target)
+{
+
+
+	if (!_target)
+	return;
+
+	target  = _target;
+	OnTargetSent();
 }
 
 // Called when the game starts or when spawned
@@ -36,10 +58,29 @@ void AMissile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+
+	if (target && fuel > 0)
+	{
+		projectileMovementComponent->AddForce((GetActorForwardVector() * (onGoingImpulseForce_Meter * 1000)));
+		FRotator lookAtTarget = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), target->GetActorLocation());
+		SetActorRotation(lookAtTarget);
+		fuel -= DeltaTime;
+
+		if (fuel <= 0)
+		{
+			target = nullptr;
+		}
+	}
+
+
 }
 
 void AMissile::OnComponentBeginOverlap_Action(class UPrimitiveComponent* OverlappedComponent, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-
+	if (Cast<ADrones>(OtherActor))
+	{
+		Cast<ADrones>(OtherActor)->Explode();
+		Destroy();
+	}
 }
 

@@ -21,7 +21,7 @@ void UDecisionComponent::BeginPlay()
 	Super::BeginPlay();
 
 	noiseFilterTimer = noiseFilterTimerValue;
-
+	noiseThreshold = noiseFilterTimerValue;
 }
 
 
@@ -102,14 +102,12 @@ void UDecisionComponent::AddNoiseEntry(class AActor* _noise)
 void UDecisionComponent::NoiseFilter(float _dt)
 {
 
-	UE_LOG(LogTemp, Warning, TEXT("Noise Filter"));
 
 	noiseFilterTimer -= _dt;
 	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Magenta, FString::Printf(TEXT("Noise filter value %f"), noiseFilterTimer));
 
-	if (noiseFilterTimer <= 0.f)
+	if (noiseFilterTimer <= 0.0)
 	{
-
 		if (detectedNoiseMap.Num() > 0)
 		{
 			for (auto& noiseElem : detectedNoiseMap)
@@ -118,7 +116,7 @@ void UDecisionComponent::NoiseFilter(float _dt)
 				float noiseTime = noiseElem.Value;
 
 
-				if (noiseTime <= 0)
+				if (noiseTime <= noiseThreshold)
 				{
 					RemoveNoiseEntry(noise);
 				}

@@ -19,8 +19,6 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UFUNCTION(BlueprintImplementableEvent, CallInEditor)
-	void SpawnMissile();
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	TSubclassOf<class AMissile> GetMissileType() { return missileType; }
@@ -34,19 +32,18 @@ protected:
 
 
 	void CanSendMissile();
-	void LaunchMissile();
+	void LaunchMissile(class AActor* _target);
 	void Reload();
 
 
-
-
-
-
 public:
+
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
 	bool ReceiveAction(class AActor* _targetLocation);
+
+
 protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
@@ -57,10 +54,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Missile")
 	TSubclassOf<class AMissile> missileType;
-
-	//UPROPERTY(EditAnywhere)
-	//int32 maxAmmo = 0;
-	//int32 ammoInLauncher;
 
 	float fireRate = 0.f;
 	UPROPERTY(EditAnywhere)

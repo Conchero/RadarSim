@@ -54,5 +54,7 @@ int32 currentDetectedIndex = 1;
 UPROPERTY(EditAnywhere)
 float noiseFilterTimerValue = 0.8f;
 float noiseFilterTimer = 0.f;
+float noiseThreshold = noiseFilterTimerValue;
+
 
 };

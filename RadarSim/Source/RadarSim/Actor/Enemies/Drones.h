@@ -7,24 +7,52 @@
 #include "Drones.generated.h"
 
 UCLASS()
-class RADARSIM_API ADrones : public AActor
+class RADARSIM_API ADrones : public APawn
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	ADrones();
+
+
+
+	void Explode();	
+
+
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	
+	UPROPERTY(EditInstanceOnly)
+	class AActor* movementBoundingBox;
 
-public:	
+	FVector currentTarget;
+	UPROPERTY(EditAnywhere)
+	float acceptanceRadius = 200;
+	void RandomMovement(float _dt);
+	void ChooseNewLocation();
+
+protected:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-			UPROPERTY(EditAnywhere)
+	UPROPERTY(EditInstanceOnly)
 	class UStaticMeshComponent* mesh;
+
+	UPROPERTY(EditInstanceOnly)
+	class UBoxComponent* boxCollision;
+
+
+	UPROPERTY(EditAnywhere)
+	class UFloatingPawnMovement* floatingPawnMovement;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class ADroneController> droneController;
+	
+private: 
+	int sendLocationInfiniteLoopBreaker = 0;
+	int loopBreakerLimit = 100;
+
 };

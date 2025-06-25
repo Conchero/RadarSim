@@ -97,11 +97,6 @@ void AMissileLauncher::GetMissileAttachedToMissileLauncherFromStart(TArray<class
 	{
 		if (Cast<AMissile>(missile))
 		{
-
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Magenta, FString::Printf(TEXT("alors salut ")));
-
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Magenta, FString::Printf(TEXT("Actor Name %s, relative transform = %s"), *missile->GetName(), *missile->GetRootComponent()->GetRelativeTransform().ToString()));
-
 			missileActorArray.Add(missile);
 			missileRelativeTransform.Add(missile->GetRootComponent()->GetRelativeTransform());
 		}
@@ -112,18 +107,21 @@ void AMissileLauncher::GetMissileAttachedToMissileLauncherFromStart(TArray<class
 
 void AMissileLauncher::CanSendMissile()
 {
+
 	if (canShoot && (!is_reloading && missileActorArray.Num() > 0) && targetArray.Num() > 0)
 	{
 		bool shotFired = false;
 		if (targetArray[0])
 		{
 
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("target was aimed %s"), *targetArray[0]->GetName()));
-
 			shotFired = true;
 			canShoot = false;
 
-			LaunchMissile();
+			LaunchMissile(targetArray[0]);
+		}
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("target was  null")));
 		}
 
 		if (shotFired)
@@ -134,10 +132,11 @@ void AMissileLauncher::CanSendMissile()
 }
 
 
-void AMissileLauncher::LaunchMissile()
+void AMissileLauncher::LaunchMissile(AActor* _target)
 {
+	
 
-	if (missileActorArray.Num() <= 0)
+	if (missileActorArray.Num() <= 0 || !_target)
 		return;
 
 	int32 lastIndex = missileActorArray.Num() - 1;
@@ -145,9 +144,15 @@ void AMissileLauncher::LaunchMissile()
 	{
 		AMissile* missileToDestroy = missileActorArray[lastIndex];
 		missileActorArray.RemoveAt(lastIndex);
-
+		
 		if (missileToDestroy)
-			missileToDestroy->Destroy();
+		{
+		missileToDestroy->SetTarget(_target);
+		}
+		else
+		{
+		}
+
 	}
 
 

@@ -6,6 +6,9 @@
 #include "GameFramework/Actor.h"
 #include "Missile.generated.h"
 
+
+
+
 UCLASS()
 class RADARSIM_API AMissile : public AActor
 {
@@ -15,7 +18,10 @@ public:
 	// Sets default values for this actor's properties
 	AMissile();
 
-	void SetTarget(class AActor* _target) { targetLocation = _target; };
+	void OnTargetSent();
+
+	void SetTarget(class AActor* _target);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -23,10 +29,12 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	class AActor* targetLocation;
 
 
 private:
+
+	class AActor* target;
+
 
 	UPROPERTY(EditAnywhere)
 	class UProjectileMovementComponent* projectileMovementComponent;
@@ -36,10 +44,22 @@ private:
 	UPROPERTY(EditAnywhere)
 	class UBoxComponent* boxCollision;
 
+	UPROPERTY(EditAnywhere)
+	float initialImpulseForce_Meter = 2;
+
+	UPROPERTY(EditAnywhere)
+	float onGoingImpulseForce_Meter = 2;
+
+
+	UPROPERTY(EditAnywhere)
+	float fuel = 10.f;
+
+
+
 	UFUNCTION()
 	 void OnComponentBeginOverlap_Action(class UPrimitiveComponent* OverlappedComponent, class AActor* OtherActor ,class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-
+	 
 
 
 
