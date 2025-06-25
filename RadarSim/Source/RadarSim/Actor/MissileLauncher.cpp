@@ -42,9 +42,6 @@ bool AMissileLauncher::ReceiveAction(class AActor* _target)
 {
 	targetArray.Add(_target);
 
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("YOOOOO")));
-
-
 	return true;
 }
 
@@ -123,10 +120,10 @@ void AMissileLauncher::CanSendMissile()
 			canShoot = false;
 
 			LaunchMissile(targetArray[0]);
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("target target location %s "),*targetArray[0]->GetActorLocation().ToString()));
 		}
 		else
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("target was  null")));
 		}
 		//Don't remove target if it couldn't shoot rocker for any reason
 		if (shotFired)

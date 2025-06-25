@@ -9,18 +9,12 @@ public class RadarSim : ModuleRules
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
         PublicDependencyModuleNames.AddRange(new string[] { "Core",
+          "Core",
             "CoreUObject",
             "Engine",
             "InputCore",
             "EnhancedInput",
-            "Kismet",
-        //    "UnrealEd",
-        //    "Slate",
-        //"SlateCore",
-        //"EditorFramework",
-        //"MainFrame",
-        //"PropertyEditor",
-                "AIModule",         
+            "AIModule",
             "NavigationSystem"
         });
     }

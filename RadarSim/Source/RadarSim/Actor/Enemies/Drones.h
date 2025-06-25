@@ -19,7 +19,8 @@ public:
 
 	void Explode();
 
-
+	UFUNCTION(BlueprintCallable)
+	void SetMovementBoundingBox(class AActor* _boundingBox) ;
 
 protected:
 	// Called when the game starts or when spawned

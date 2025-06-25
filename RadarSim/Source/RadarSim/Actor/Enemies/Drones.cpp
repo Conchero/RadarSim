@@ -35,6 +35,12 @@ void ADrones::Explode()
 	Destroy();
 }
 
+void ADrones::SetMovementBoundingBox(class AActor* _boundingBox)
+{
+	movementBoundingBox = _boundingBox; 
+	ChooseNewLocation();
+}
+
 // Called when the game starts or when spawned
 void ADrones::BeginPlay()
 {
