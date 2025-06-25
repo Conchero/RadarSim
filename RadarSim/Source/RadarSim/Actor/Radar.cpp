@@ -5,7 +5,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "../Components/DecisionComponent.h"
 
-
+// Easier to read than 0 and 1
 enum EMainAxisPoint
 {
 	START,
@@ -37,6 +37,8 @@ ARadar::ARadar()
 void ARadar::BeginPlay()
 {
 	Super::BeginPlay();
+
+	//In case player didn't do it in editor
 	ResizeAreaActionVizualizer();
 }
 
@@ -45,6 +47,8 @@ void ARadar::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+
+	// Filter actors outside action parameter
 	TArray<AActor*> overlappingActors;
 	actionArea->GetOverlappingActors(overlappingActors);
 
@@ -55,12 +59,10 @@ void ARadar::Tick(float DeltaTime)
 
 			if (decisionComponent)
 			{
-				decisionComponent->AddNoiseEntry(actor);
+				decisionComponent->AddNoiseEntry(actor, DeltaTime);
 			}
 		}
 	}
-
-
 
 	FRotator radarSpin = FRotator(radarMesh->GetComponentRotation().Pitch, radarMesh->GetComponentRotation().Yaw + (rotationSpeed * DeltaTime), radarMesh->GetComponentRotation().Roll);
 	radarMesh->SetWorldRotation(radarSpin);
@@ -80,35 +82,26 @@ bool ARadar::CheckPresenceInActiveZone(FVector _noiseLocation)
 
 float ARadar::GetAngleFromMainAxisToDetectedNoise(FVector _noiseLocation)
 {
+
+	// Get the main distance vector and the distance vector with given location
 	FVector mainDirection = GetRadarZoneMainAxisPoints()[END] - GetRadarZoneMainAxisPoints()[START];
 	FVector noiseDirection = _noiseLocation - GetRadarZoneMainAxisPoints()[START];
 
+	//Make a dot product to get _noise location angle
 	mainDirection.Normalize();
 	noiseDirection.Normalize();
 
 	float dotProduct = FVector::DotProduct(mainDirection, noiseDirection);
 
-	float angle  = FMath::Acos(FVector::DotProduct(mainDirection, noiseDirection));
-	return FMath::Abs(angle*180/3.14);
-	
-}
+	float angle = FMath::Acos(FVector::DotProduct(mainDirection, noiseDirection));
+	return FMath::Abs(angle * 180 / 3.14);
 
-void ARadar::CreateFalseNoise()
-{
-	/*if (FMath::RandRange(0, 100) < noiseRandChance)
-	{
-		if (decisionComponent)
-		{
-		}
-	}*/
 }
 
 void ARadar::ResizeAreaActionVizualizer()
 {
 	actionArea->SetWorldScale3D(FVector(1 * actionAreaDiameter_Meter, 1 * actionAreaDiameter_Meter, actionArea->GetComponentTransform().GetScale3D().Z));
 }
-
-
 
 TArray<FVector> ARadar::GetRadarZoneMainAxisPoints()
 {
@@ -122,6 +115,7 @@ TArray<FVector> ARadar::GetRadarZoneMainAxisPoints()
 	return mainAxisPoint;
 }
 
+//Main axis rotated by -half angle
 FVector ARadar::GetLeftRadarRotatedAxis()
 {
 
@@ -137,6 +131,7 @@ FVector ARadar::GetLeftRadarRotatedAxis()
 
 }
 
+//Main axis rotated by half angle
 FVector ARadar::GetRightRadarRotatedAxis()
 {
 	float radianAngle = activeAngle * 3.14 / 180;

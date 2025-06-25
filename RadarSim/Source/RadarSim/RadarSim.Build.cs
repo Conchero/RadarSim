@@ -14,12 +14,12 @@ public class RadarSim : ModuleRules
             "InputCore",
             "EnhancedInput",
             "Kismet",
-            "UnrealEd",
-            "Slate",
-        "SlateCore",
-        "EditorFramework",
-        "MainFrame",
-        "PropertyEditor",
+        //    "UnrealEd",
+        //    "Slate",
+        //"SlateCore",
+        //"EditorFramework",
+        //"MainFrame",
+        //"PropertyEditor",
                 "AIModule",         
             "NavigationSystem"
         });

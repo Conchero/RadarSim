@@ -5,13 +5,12 @@
 #include "Components/BoxComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
 #include "NavigationSystem.h"
-#include "../Controller/DroneController.h"
 #include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 ADrones::ADrones()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 
@@ -27,15 +26,13 @@ ADrones::ADrones()
 
 	floatingPawnMovement = CreateDefaultSubobject<UFloatingPawnMovement>("Floating Movement");
 
-
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
-	AIControllerClass = ADroneController::StaticClass();
 
 }
 
 void ADrones::Explode()
 {
- Destroy();
+	Destroy();
 }
 
 // Called when the game starts or when spawned
@@ -47,27 +44,29 @@ void ADrones::BeginPlay()
 
 void ADrones::RandomMovement(float _dt)
 {
-	FVector droneLocation = GetActorLocation();
-	float distance = FVector::Dist(droneLocation,currentTarget);
 
-	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Red, FString::Printf(TEXT("%f"), distance));
+	//Movement of Drones
+	//Calculate distance from the targeted location, until close enough
+	FVector droneLocation = GetActorLocation();
+	float distance = FVector::Dist(droneLocation, currentTarget);
 
 	if (distance <= acceptanceRadius)
 	{
-	ChooseNewLocation();
+		ChooseNewLocation();
 	}
 
 
 	FVector direction = (currentTarget - droneLocation).GetSafeNormal();
-	AddMovementInput(direction, (1.0f *droneSpeed) * _dt, false);
+	AddMovementInput(direction, (1.0f * droneSpeed) * _dt, false);
 }
 
 void ADrones::ChooseNewLocation()
 {
+	//Get Random Point in Map Collision Box
 	if (movementBoundingBox) {
 		if (movementBoundingBox->GetComponentByClass<UBoxComponent>())
 		{
-		currentTarget = UKismetMathLibrary::RandomPointInBoundingBox(movementBoundingBox->GetActorLocation(), movementBoundingBox->GetComponentByClass<UBoxComponent>()->GetScaledBoxExtent());
+			currentTarget = UKismetMathLibrary::RandomPointInBoundingBox(movementBoundingBox->GetActorLocation(), movementBoundingBox->GetComponentByClass<UBoxComponent>()->GetScaledBoxExtent());
 		}
 	}
 }

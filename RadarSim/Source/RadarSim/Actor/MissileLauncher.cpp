@@ -42,6 +42,9 @@ bool AMissileLauncher::ReceiveAction(class AActor* _target)
 {
 	targetArray.Add(_target);
 
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("YOOOOO")));
+
+
 	return true;
 }
 
@@ -77,7 +80,6 @@ void AMissileLauncher::ReloadManagement(float _dt)
 	if (is_reloading)
 	{
 		reloadTime -= _dt;
-		GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Magenta, FString::Printf(TEXT("Reloading %f"), reloadTime));
 		if (reloadTime <= 0)
 		{
 			Reload();
@@ -95,9 +97,11 @@ void AMissileLauncher::GetMissileAttachedToMissileLauncherFromStart(TArray<class
 
 	for (AMissile* missile : missiles)
 	{
+		//Should already be missile actor but for security purpose made a cast
 		if (Cast<AMissile>(missile))
 		{
 			missileActorArray.Add(missile);
+			//Save relative transform for later reloading
 			missileRelativeTransform.Add(missile->GetRootComponent()->GetRelativeTransform());
 		}
 	}
@@ -111,6 +115,7 @@ void AMissileLauncher::CanSendMissile()
 	if (canShoot && (!is_reloading && missileActorArray.Num() > 0) && targetArray.Num() > 0)
 	{
 		bool shotFired = false;
+		//First In, First Out Logic 
 		if (targetArray[0])
 		{
 
@@ -123,7 +128,7 @@ void AMissileLauncher::CanSendMissile()
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("target was  null")));
 		}
-
+		//Don't remove target if it couldn't shoot rocker for any reason
 		if (shotFired)
 		{
 			targetArray.RemoveAt(0);
@@ -134,20 +139,22 @@ void AMissileLauncher::CanSendMissile()
 
 void AMissileLauncher::LaunchMissile(AActor* _target)
 {
-	
+
 
 	if (missileActorArray.Num() <= 0 || !_target)
 		return;
 
+
+	//Last In First Out
 	int32 lastIndex = missileActorArray.Num() - 1;
 	if (lastIndex < missileActorArray.Num())
 	{
 		AMissile* missileToDestroy = missileActorArray[lastIndex];
 		missileActorArray.RemoveAt(lastIndex);
-		
+
 		if (missileToDestroy)
 		{
-		missileToDestroy->SetTarget(_target);
+			missileToDestroy->SetTarget(_target);
 		}
 		else
 		{
@@ -170,16 +177,10 @@ void AMissileLauncher::Reload()
 
 	for (int i = 0; i < missileRelativeTransform.Num(); i++)
 	{
-
-
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Oh la la")));
-
-
 		AMissile* missileToSpawn = GetWorld()->SpawnActor<AMissile>(missileType, missileRelativeTransform[i].GetLocation(), missileRelativeTransform[i].GetRotation().Rotator(), FActorSpawnParameters());
 
 		if (missileToSpawn)
 		{
-
 			FAttachmentTransformRules attachRule = FAttachmentTransformRules(EAttachmentRule::KeepRelative, EAttachmentRule::KeepRelative, EAttachmentRule::KeepWorld, true);
 			missileToSpawn->AttachToComponent(missileLauncherMesh, attachRule);
 			missileActorArray.Add(missileToSpawn);

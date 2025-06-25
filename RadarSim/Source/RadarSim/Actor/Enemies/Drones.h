@@ -17,7 +17,7 @@ public:
 
 
 
-	void Explode();	
+	void Explode();
 
 
 
@@ -25,15 +25,18 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	//To fill in BP 
 	UPROPERTY(EditInstanceOnly)
 	class AActor* movementBoundingBox;
 
+
+	//Drone Fly Attribute
 	FVector currentTarget;
 	UPROPERTY(EditAnywhere)
 	float acceptanceRadius = 200;
 	UPROPERTY(EditAnywhere)
 	float droneSpeed = 200.f;
-		void RandomMovement(float _dt);
+	void RandomMovement(float _dt);
 	void ChooseNewLocation();
 
 protected:
@@ -42,19 +45,10 @@ protected:
 
 	UPROPERTY(EditInstanceOnly)
 	class UStaticMeshComponent* mesh;
-
 	UPROPERTY(EditInstanceOnly)
 	class UBoxComponent* boxCollision;
 
-
 	UPROPERTY(EditAnywhere)
 	class UFloatingPawnMovement* floatingPawnMovement;
-
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<class ADroneController> droneController;
-	
-private: 
-	int sendLocationInfiniteLoopBreaker = 0;
-	int loopBreakerLimit = 100;
 
 };

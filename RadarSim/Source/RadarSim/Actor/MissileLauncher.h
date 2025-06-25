@@ -19,33 +19,34 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-
+	//Used in BP for editor spawn button 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	TSubclassOf<class AMissile> GetMissileType() { return missileType; }
 
+	//TODO: Make it a component ---- Missile management - Tick function
 	bool MissileManagement(float _dt);
 	void FireRateManagement(float _dt);
 	void ReloadManagement(float _dt);
 
-	UFUNCTION(BlueprintCallable)
-	void GetMissileAttachedToMissileLauncherFromStart(TArray<class AMissile*> missiles);
-
-
+	//TODO: Make it a component ---- Missile management - functions
 	void CanSendMissile();
 	void LaunchMissile(class AActor* _target);
 	void Reload();
 
 
+	//Get Missiles spawned in editor and linked them to missile array
+	UFUNCTION(BlueprintCallable)
+	void GetMissileAttachedToMissileLauncherFromStart(TArray<class AMissile*> missiles);
+
+
+
 public:
-
-
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
 	bool ReceiveAction(class AActor* _targetLocation);
-
-
 protected:
-
+	/// Missile Launcher Attribute
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	class UStaticMeshComponent* missileLauncherMesh;
 
