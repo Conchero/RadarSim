@@ -55,7 +55,6 @@ private:
 	float fuel = 10.f;
 
 
-
 	UFUNCTION()
 	 void OnComponentBeginOverlap_Action(class UPrimitiveComponent* OverlappedComponent, class AActor* OtherActor ,class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 

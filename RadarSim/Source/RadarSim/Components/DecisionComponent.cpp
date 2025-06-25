@@ -56,7 +56,9 @@ void UDecisionComponent::AddNoiseEntry(class AActor* _noise, float _dt)
 	///
 	/// Logic :
 	/// Each Time the radar detect something it sends it to the decision component 
-	/// If a new entity is found 
+	/// If a new entity is found then we add a tag to find it back 
+	/// If not a new entity add the delta time 
+	/// ---> Go to NoiseFilter() to continue
 	if (_noise)
 	{
 		bool newEntity = false;
@@ -109,13 +111,19 @@ void UDecisionComponent::AddNoiseEntry(class AActor* _noise, float _dt)
 
 void UDecisionComponent::NoiseFilter(float _dt)
 {
+
+	///
+	/// Logic :
+	///When the noise filter arrives at 0 we check if any noise detected was parasite 
+	/// If it is we remove it 
+	/// If it's we send it as a target
 	noiseFilterTimer -= _dt;
 	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Green, FString::Printf(TEXT(" timer noise %f"), noiseFilterTimer));
 	if (noiseFilterTimer <= 0.0)
 	{
 		if (detectedNoiseMap.Num() > 0)
 		{
-
+			//Arrays to allow dynamic shrinking
 			TArray<AActor*> toRemove;
 			TArray<AActor*> toSend;
 			for (auto& noiseElem : detectedNoiseMap)
@@ -123,9 +131,9 @@ void UDecisionComponent::NoiseFilter(float _dt)
 				AActor* noise = noiseElem.Key;
 				float noiseTime = noiseElem.Value;
 
-				//If actor diseapeared (wasn't detected any more by radar) 
-				// noise time should be under noise Threshold/2
-				if (noiseTime <= noiseThreshold / 2)
+				//If actor disappear (wasn't detected any more by radar) 
+				// noise time should be under noise Threshold/(1.1)->security to not remove potential target
+				if (noiseTime <= noiseThreshold / 1.1)
 				{
 					toRemove.Add(noise);
 				}
@@ -143,7 +151,6 @@ void UDecisionComponent::NoiseFilter(float _dt)
 			for (AActor* noise : toRemove)
 			{
 				detectedNoiseMap.Remove(noise);
-				GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Red, TEXT("Noise removed"));
 			}
 
 			for (AActor* target : toSend)
@@ -159,52 +166,3 @@ void UDecisionComponent::NoiseFilter(float _dt)
 }
 
 
-void UDecisionComponent::ConfirmTarget()
-{
-	//TMap<AActor*, float> newDetectionWithoutTarget;
-
-	//if (detectedNoiseMap.Num() > 0)
-	//{
-	//	for (auto& noiseElem : detectedNoiseMap)
-	//	{
-	//		AActor* noise = noiseElem.Key;
-	//		float noiseTime = noiseElem.Value;
-
-
-	//		if (noise && noiseTime >= timeBeforeLock * timeReset)
-	//		{
-	//			actionReceiver->ReceiveAction(noise);
-	//		}
-	//		else
-	//		{
-	//			newDetectionWithoutTarget.Emplace(noise, noiseTime);
-	//		}
-	//	}
-	//}
-
-
-	//detectedNoiseMap = newDetectionWithoutTarget;
-}
-
-void UDecisionComponent::RemoveNoiseEntry(class AActor* _noise)
-{
-
-	//if (!_noise)
-	//	return;
-
-
-	//if (detectedNoiseMap.Num() > 0)
-	//{
-	//	for (auto& noiseElem : detectedNoiseMap)
-	//	{
-	//		AActor* noise = noiseElem.Key;
-
-	//		GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Red, FString::Printf(TEXT("Noise removed")));
-
-	//		if (_noise->Tags.Contains(noise->Tags[0]))
-	//		{
-	//			detectedNoiseMap.Remove(_noise);
-	//		}
-	//	}
-	//}
-}
