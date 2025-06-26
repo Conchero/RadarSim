@@ -41,10 +41,6 @@ void UDecisionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 		{
 			AActor* noise = noiseElem.Key;
 			float noiseTime = noiseElem.Value;
-
-
-			GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Green, FString::Printf(TEXT("%s time %f"), *noise->GetName(), noiseTime));
-
 		}
 	}
 
@@ -87,7 +83,6 @@ void UDecisionComponent::AddNoiseEntry(class AActor* _noise, float _dt)
 			}
 			detectedNoiseMap.Emplace(_noise, 0.f);
 
-			noiseFilterTimer = noiseFilterTimerValue;
 		}
 		else
 		{
@@ -118,7 +113,6 @@ void UDecisionComponent::NoiseFilter(float _dt)
 	/// If it is we remove it 
 	/// If it's we send it as a target
 	noiseFilterTimer -= _dt;
-	GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Green, FString::Printf(TEXT(" timer noise %f"), noiseFilterTimer));
 	if (noiseFilterTimer <= 0.0)
 	{
 		if (detectedNoiseMap.Num() > 0)
@@ -132,8 +126,8 @@ void UDecisionComponent::NoiseFilter(float _dt)
 				float noiseTime = noiseElem.Value;
 
 				//If actor disappear (wasn't detected any more by radar) 
-				// noise time should be under noise Threshold/(1.1)->security to not remove potential target
-				if (noiseTime <= noiseThreshold / 1.1)
+				// noise time should be under noise Threshold/(2)->security to not remove potential target
+				if (noiseTime <= noiseThreshold / 2)
 				{
 					toRemove.Add(noise);
 				}
@@ -150,6 +144,7 @@ void UDecisionComponent::NoiseFilter(float _dt)
 
 			for (AActor* noise : toRemove)
 			{
+				noise->Tags.RemoveAt(0);
 				detectedNoiseMap.Remove(noise);
 			}
 

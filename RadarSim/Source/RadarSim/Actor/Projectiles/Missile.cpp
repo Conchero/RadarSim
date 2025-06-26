@@ -31,7 +31,7 @@ AMissile::AMissile()
 
 void AMissile::OnTargetSent()
 {
-	projectileMovementComponent->ProjectileGravityScale = 1.0;
+	projectileMovementComponent->ProjectileGravityScale = 0.1;
 	projectileMovementComponent->AddForce((GetActorForwardVector() * (initialImpulseForce_Meter * 1000) ) );
 }
 
@@ -61,6 +61,10 @@ void AMissile::Tick(float DeltaTime)
 
 	if (target && fuel > 0)
 	{
+
+
+		GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Red, FString::Printf(TEXT("%s is target"), *target->GetName()));
+
 		projectileMovementComponent->AddForce((GetActorForwardVector() * (onGoingImpulseForce_Meter * 1000)));
 		FRotator lookAtTarget = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), target->GetActorLocation());
 		SetActorRotation(lookAtTarget);

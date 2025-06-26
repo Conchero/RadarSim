@@ -120,11 +120,12 @@ void AMissileLauncher::CanSendMissile()
 			canShoot = false;
 
 			LaunchMissile(targetArray[0]);
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("target target location %s "),*targetArray[0]->GetActorLocation().ToString()));
 		}
 		else
 		{
 		}
+
+
 		//Don't remove target if it couldn't shoot rocker for any reason
 		if (shotFired)
 		{
