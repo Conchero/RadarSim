@@ -22,6 +22,9 @@ public:
 
 	void SetTarget(class AActor* _target);
 
+
+
+	void SetInitialImpulseForce(float _v) { initialImpulseForce_Meter = _v; };
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -31,12 +34,12 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 
-private:
+protected:
 
 	class AActor* target;
 
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class UProjectileMovementComponent* projectileMovementComponent;
 	UPROPERTY(EditAnywhere)
 	class UStaticMeshComponent* missileMesh;
@@ -54,7 +57,11 @@ private:
 	UPROPERTY(EditAnywhere)
 	float fuel = 10.f;
 
+	FVector lastTargetPos;
+	FVector lastMissilePos;
 
+
+	FVector GetPredictedLocation(FVector currentPos, FVector lastPos, float _dt);
 
 	UFUNCTION()
 	 void OnComponentBeginOverlap_Action(class UPrimitiveComponent* OverlappedComponent, class AActor* OtherActor ,class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

@@ -32,7 +32,7 @@ AMissile::AMissile()
 void AMissile::OnTargetSent()
 {
 	projectileMovementComponent->ProjectileGravityScale = 0.1;
-	projectileMovementComponent->AddForce((GetActorForwardVector() * (initialImpulseForce_Meter * 1000) ) );
+	projectileMovementComponent->AddForce((GetActorForwardVector() * (initialImpulseForce_Meter)));
 }
 
 void AMissile::SetTarget(AActor* _target)
@@ -61,21 +61,54 @@ void AMissile::Tick(float DeltaTime)
 
 	if (target && fuel > 0)
 	{
+		FVector targetDirection = GetPredictedLocation(target->GetActorLocation(), lastTargetPos, DeltaTime);
+		FVector missileDirection = GetPredictedLocation(GetActorLocation(), lastMissilePos,DeltaTime);
 
 
-		GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Red, FString::Printf(TEXT("%s is target"), *target->GetName()));
+		DrawDebugSphere(GetWorld(), missileDirection, 50.f, 5, FColor::Magenta, false, -1.f, 0U, 10.f);
+		DrawDebugSphere(GetWorld(), targetDirection, 10.f, 5,FColor::Green,false,-1.f,0U,1.f);
+		DrawDebugLine(GetWorld(),missileDirection,targetDirection, FColor::Red, false, -1.f, 0U, 5.f);
 
-		projectileMovementComponent->AddForce((GetActorForwardVector() * (onGoingImpulseForce_Meter * 1000)));
+
+
+		FVector pushForce = (targetDirection - missileDirection);
+		float maxSpeed = (1 / projectileMovementComponent->GetMaxSpeed()) * 100;
+		float absoluteDistWithTarget = FMath::Abs(FVector::Dist(GetActorLocation(), target->GetActorLocation())) / maxSpeed;
+
+		pushForce.Normalize();
+
+		SetActorLocation(GetActorLocation() + (pushForce * absoluteDistWithTarget));
+
+
+		GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Red, FString::Printf(TEXT("Push force %s"), *(pushForce).ToString()));
+
+
 		FRotator lookAtTarget = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), target->GetActorLocation());
 		SetActorRotation(lookAtTarget);
 		fuel -= DeltaTime;
 
-		if (fuel <= 0)
-		{
-			target = nullptr;
-		}
+
+		lastTargetPos = target->GetActorLocation();
+		lastMissilePos = GetActorLocation();
+
+		//if (fuel <= 0)
+		//{
+		//	target = nullptr;
+		//}
 	}
 
+
+}
+
+FVector AMissile::GetPredictedLocation(FVector currentPos, FVector lastPos, float _dt)
+{
+
+	FVector dir = (currentPos - lastPos);
+	float speed = FVector::Dist(currentPos,lastPos) / (_dt*100);
+
+	FVector predictedLocation  = currentPos + (dir* speed);
+
+	return  predictedLocation;
 
 }
 

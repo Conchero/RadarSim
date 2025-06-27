@@ -63,7 +63,7 @@ void ADrones::RandomMovement(float _dt)
 
 
 	FVector direction = (currentTarget - droneLocation).GetSafeNormal();
-	AddMovementInput(direction, (1.0f * droneSpeed) * _dt, false);
+	AddMovementInput(direction, (1.0f), false);
 }
 
 void ADrones::ChooseNewLocation()

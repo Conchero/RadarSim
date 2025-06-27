@@ -140,7 +140,6 @@ void UDecisionComponent::NoiseFilter(float _dt)
 
 			}
 
-			detectedNoiseMap.Empty(0);
 
 			for (AActor* noise : toRemove)
 			{
@@ -152,6 +151,8 @@ void UDecisionComponent::NoiseFilter(float _dt)
 			{
 				actionReceiver->ReceiveAction(target);
 			}
+
+			detectedNoiseMap.Empty(0);
 
 		}
 		noiseFilterTimer = noiseFilterTimerValue;
