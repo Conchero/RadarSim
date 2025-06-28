@@ -7,6 +7,7 @@
 #include "Missile.generated.h"
 
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMissileDestroyed, class AActor*, _target);
 
 
 UCLASS()
@@ -22,12 +23,18 @@ public:
 
 	void SetTarget(class AActor* _target);
 
-
-
+	
 	void SetInitialImpulseForce(float _v) { initialImpulseForce_Meter = _v; };
+
+	FOnMissileDestroyed OnMissileDestroyed;
+
+	
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	virtual void Destroyed() override;
 
 public:
 	// Called every frame

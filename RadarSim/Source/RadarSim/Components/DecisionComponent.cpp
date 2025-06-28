@@ -3,6 +3,7 @@
 
 #include "../Components/DecisionComponent.h"
 #include "../Actor/MissileLauncher.h"
+#include "../Actor/Radar.h"
 
 // Sets default values for this component's properties
 UDecisionComponent::UDecisionComponent()
@@ -20,6 +21,9 @@ void UDecisionComponent::BeginPlay()
 
 	noiseFilterTimer = noiseFilterTimerValue;
 	noiseThreshold = noiseFilterTimerValue;
+
+	if (actionReceiver)
+		actionReceiver->OnMissileSent.AddUniqueDynamic(this, &UDecisionComponent::RemoveSavedEntry);
 }
 
 
@@ -34,13 +38,15 @@ void UDecisionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 
 	NoiseFilter(DeltaTime);
 
-	if (detectedNoiseMap.Num() > 0)
+	if (savedTargetEntries.Num() > 0)
 	{
 
-		for (auto& noiseElem : detectedNoiseMap)
+		for (AActor* entry : savedTargetEntries)
 		{
-			AActor* noise = noiseElem.Key;
-			float noiseTime = noiseElem.Value;
+			if (entry)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Emerald, FString::Printf(TEXT("%s at location %s"), *entry->GetName(), *entry->GetActorLocation().ToString()));
+			}
 		}
 	}
 
@@ -149,6 +155,7 @@ void UDecisionComponent::NoiseFilter(float _dt)
 
 			for (AActor* target : toSend)
 			{
+				savedTargetEntries.Add(target);
 				actionReceiver->ReceiveAction(target);
 			}
 
@@ -161,4 +168,25 @@ void UDecisionComponent::NoiseFilter(float _dt)
 
 }
 
+void UDecisionComponent::RemoveSavedEntry(class AActor* _actor)
+{
+	if (!_actor)
+		return;
+
+	int indexToRemove = -1;
+	for (int i = 0; i < savedTargetEntries.Num(); i++)
+	{
+		if (savedTargetEntries[i] && _actor->GetName() == savedTargetEntries[i]->GetName())
+		{
+			indexToRemove = i;
+		}
+	}
+
+	if (indexToRemove >= 0)
+	{
+		savedTargetEntries.RemoveAt(indexToRemove);
+	}
+
+
+}
 

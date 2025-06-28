@@ -46,6 +46,8 @@ void ARadar::BeginPlay()
 	//In case player didn't do it in editor
 	ResizeAreaActionVizualizer();
 
+	decisionComponent->SetRadar(this);
+
 	radarVizualizer_MT =  UMaterialInstanceDynamic::Create(radarVizualizerMesh->GetMaterial(0),this);
 	radarVizualizerMesh->SetMaterial(0, radarVizualizer_MT);
 }
@@ -84,6 +86,8 @@ void ARadar::Tick(float DeltaTime)
 
 
 
+
+
 bool ARadar::CheckPresenceInActiveZone(FVector _noiseLocation)
 {
 	bool isInZone = GetAngleFromMainAxisToDetectedNoise(_noiseLocation) < activeAngle;
@@ -117,6 +121,7 @@ float deltaRotation = (rotationSpeed * radarVisualizerSpeedFactor) * _dt;
  float radarAngleRadians = FMath::DegreesToRadians(radarAngleDegrees);
 
  radarVizualizer_MT->SetScalarParameterValue("RadarAngle", radarAngleRadians);
+
 }
 
 void ARadar::ResizeAreaActionVizualizer()

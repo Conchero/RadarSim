@@ -25,10 +25,17 @@ protected:
 	void NoiseFilter(float _dt);
 	void ConfirmTarget();
 
-
+	TArray<class AActor*> savedTargetEntries;
+	UFUNCTION()
+	void RemoveSavedEntry(class AActor* _actor);
 public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+
+
+	UFUNCTION(BlueprintCallable,BlueprintPure)
+	TArray<class AActor*> GetSavedTargetEntries() {return savedTargetEntries;};
 
 	void SetRadar(class ARadar* _radar) { detectionOwner = _radar; };
 	void SetMissileLauncher(class AMissileLauncher* _missileLauncher) {actionReceiver = _missileLauncher;};
@@ -45,7 +52,7 @@ TMap<class AActor*, float> detectedNoiseMap;
 UPROPERTY(EditAnywhere)
 float timeBeforeLock = 3.f;
 TArray<class AActor*> lockedTargetArray;
-TArray<class AActor*> aimedTargetArray;
+//TArray<class AActor*> aimedTargetArray;
 
 UPROPERTY(EditInstanceOnly)
 class ARadar* detectionOwner;

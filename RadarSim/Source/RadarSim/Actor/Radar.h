@@ -32,9 +32,14 @@ protected:
 	float radarAngleDegrees = 0;
 	UPROPERTY(EditAnywhere)
 	float  radarVisualizerSpeedFactor;
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+	
+	UFUNCTION(BlueprintCallable,BlueprintPure)
+	class UDecisionComponent* GetDecisionComponent() {return decisionComponent;};
+
 private:
 
 	//Used in editor to avoid resizing Action area by hand

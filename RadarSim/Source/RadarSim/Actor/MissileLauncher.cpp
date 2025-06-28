@@ -106,6 +106,12 @@ void AMissileLauncher::GetMissileAttachedToMissileLauncherFromStart(TArray<class
 
 
 
+void AMissileLauncher::RemovedEntryOnDestroy(class AActor* _target)
+{
+	OnMissileSent.Broadcast(_target);
+
+}
+
 void AMissileLauncher::CanSendMissile()
 {
 
@@ -152,6 +158,7 @@ void AMissileLauncher::LaunchMissile(AActor* _target)
 
 		if (missileToDestroy)
 		{
+			missileToDestroy->OnMissileDestroyed.AddUniqueDynamic(this, &AMissileLauncher::RemovedEntryOnDestroy);
 			missileToDestroy->SetTarget(_target);
 		}
 		else

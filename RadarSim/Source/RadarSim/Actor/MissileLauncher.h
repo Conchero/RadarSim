@@ -6,6 +6,9 @@
 #include "GameFramework/Actor.h"
 #include "MissileLauncher.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMissileSent, class AActor*, target);
+
+
 UCLASS()
 class RADARSIM_API AMissileLauncher : public AActor
 {
@@ -38,13 +41,15 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void GetMissileAttachedToMissileLauncherFromStart(TArray<class AMissile*> missiles);
 
-
+	UFUNCTION()
+	void RemovedEntryOnDestroy(class AActor* _target);
 
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
 	bool ReceiveAction(class AActor* _targetLocation);
+
+	FOnMissileSent OnMissileSent;
 protected:
 	/// Missile Launcher Attribute
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)

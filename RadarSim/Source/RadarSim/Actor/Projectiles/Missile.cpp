@@ -53,6 +53,14 @@ void AMissile::BeginPlay()
 	boxCollision->OnComponentBeginOverlap.AddUniqueDynamic(this, &AMissile::OnComponentBeginOverlap_Action);
 }
 
+void AMissile::Destroyed()
+{
+	OnMissileDestroyed.Broadcast(target);
+
+	Super::Destroyed();
+
+}
+
 // Called every frame
 void AMissile::Tick(float DeltaTime)
 {
