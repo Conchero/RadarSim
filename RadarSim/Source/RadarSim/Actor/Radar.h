@@ -23,6 +23,15 @@ protected:
 	bool CheckPresenceInActiveZone(FVector _noiseLocation);
 	float GetAngleFromMainAxisToDetectedNoise(FVector _noiseLocation);
 
+
+	//Material Management
+	UPROPERTY(EditAnywhere)
+	class UStaticMeshComponent* radarVizualizerMesh;
+	class UMaterialInstanceDynamic* radarVizualizer_MT;
+	void SetMaterialParameters(float _dt);
+	float radarAngleDegrees = 0;
+	UPROPERTY(EditAnywhere)
+	float  radarVisualizerSpeedFactor;
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -38,8 +47,10 @@ private:
 	//Radar Parameter
 	UPROPERTY(EditAnywhere)
 	float rotationSpeed = 0.08f;
-		//Used a mesh to have a cylinder form
-		//Saw on wikipedia that action areas of radars where this shape
+
+
+	//Used a mesh to have a cylinder form
+	//Saw on wikipedia that action areas of radars where this shape
 	UPROPERTY(EditAnywhere)
 	class UStaticMeshComponent* actionArea;
 	UPROPERTY(EditAnywhere)

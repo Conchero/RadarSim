@@ -4,6 +4,8 @@
 #include "../Actor/Radar.h"
 #include "Components/StaticMeshComponent.h"
 #include "../Components/DecisionComponent.h"
+#include "Materials/MaterialInstanceDynamic.h"
+
 
 // Easier to read than 0 and 1
 enum EMainAxisPoint
@@ -31,6 +33,9 @@ ARadar::ARadar()
 
 	decisionComponent = CreateDefaultSubobject<UDecisionComponent>("Decision Component");
 
+	radarVizualizerMesh = CreateDefaultSubobject<UStaticMeshComponent>("Radar Visualizer Mesh");
+	radarVizualizerMesh->SetupAttachment(RootComponent);
+
 }
 
 // Called when the game starts or when spawned
@@ -40,6 +45,9 @@ void ARadar::BeginPlay()
 
 	//In case player didn't do it in editor
 	ResizeAreaActionVizualizer();
+
+	radarVizualizer_MT =  UMaterialInstanceDynamic::Create(radarVizualizerMesh->GetMaterial(0),this);
+	radarVizualizerMesh->SetMaterial(0, radarVizualizer_MT);
 }
 
 // Called every frame
@@ -70,6 +78,8 @@ void ARadar::Tick(float DeltaTime)
 	DrawDebugLine(GetWorld(), GetRadarZoneMainAxisPoints()[START], GetRadarZoneMainAxisPoints()[END], FColor::Green, false, -1, 0U, 10.f);
 	DrawDebugLine(GetWorld(), GetRadarZoneMainAxisPoints()[START], GetLeftRadarRotatedAxis(), FColor::Cyan, false, -1, 0U, 5.f);
 	DrawDebugLine(GetWorld(), GetRadarZoneMainAxisPoints()[START], GetRightRadarRotatedAxis(), FColor::Cyan, false, -1, 0U, 5.f);
+	
+	SetMaterialParameters(DeltaTime);
 }
 
 
@@ -96,6 +106,17 @@ float ARadar::GetAngleFromMainAxisToDetectedNoise(FVector _noiseLocation)
 	float angle = FMath::Acos(FVector::DotProduct(mainDirection, noiseDirection));
 	return FMath::Abs(angle * 180 / 3.14);
 
+}
+
+void ARadar::SetMaterialParameters(float _dt)
+{
+float deltaRotation = (rotationSpeed * radarVisualizerSpeedFactor) * _dt;
+ radarAngleDegrees += deltaRotation;
+ radarAngleDegrees = FMath::Fmod(radarAngleDegrees,360.f);
+
+ float radarAngleRadians = FMath::DegreesToRadians(radarAngleDegrees);
+
+ radarVizualizer_MT->SetScalarParameterValue("RadarAngle", radarAngleRadians);
 }
 
 void ARadar::ResizeAreaActionVizualizer()

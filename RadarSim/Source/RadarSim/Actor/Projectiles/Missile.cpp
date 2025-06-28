@@ -64,37 +64,22 @@ void AMissile::Tick(float DeltaTime)
 		FVector targetDirection = GetPredictedLocation(target->GetActorLocation(), lastTargetPos, DeltaTime);
 		FVector missileDirection = GetPredictedLocation(GetActorLocation(), lastMissilePos,DeltaTime);
 
-
-		DrawDebugSphere(GetWorld(), missileDirection, 50.f, 5, FColor::Magenta, false, -1.f, 0U, 10.f);
-		DrawDebugSphere(GetWorld(), targetDirection, 10.f, 5,FColor::Green,false,-1.f,0U,1.f);
-		DrawDebugLine(GetWorld(),missileDirection,targetDirection, FColor::Red, false, -1.f, 0U, 5.f);
-
-
-
+		//Vector between target and missile location
 		FVector pushForce = (targetDirection - missileDirection);
-		float maxSpeed = (1 / projectileMovementComponent->GetMaxSpeed()) * 100;
+		//Slow the rocket down 
+		float maxSpeed = (1 / projectileMovementComponent->GetMaxSpeed())*100;
+		//As the rocket approach target it slows down to get more precise
 		float absoluteDistWithTarget = FMath::Abs(FVector::Dist(GetActorLocation(), target->GetActorLocation())) / maxSpeed;
 
 		pushForce.Normalize();
-
 		SetActorLocation(GetActorLocation() + (pushForce * absoluteDistWithTarget));
-
-
-		GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Red, FString::Printf(TEXT("Push force %s"), *(pushForce).ToString()));
-
 
 		FRotator lookAtTarget = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), target->GetActorLocation());
 		SetActorRotation(lookAtTarget);
-		fuel -= DeltaTime;
 
-
+		//Used in trajectory calculation
 		lastTargetPos = target->GetActorLocation();
 		lastMissilePos = GetActorLocation();
-
-		//if (fuel <= 0)
-		//{
-		//	target = nullptr;
-		//}
 	}
 
 
@@ -102,10 +87,9 @@ void AMissile::Tick(float DeltaTime)
 
 FVector AMissile::GetPredictedLocation(FVector currentPos, FVector lastPos, float _dt)
 {
-
 	FVector dir = (currentPos - lastPos);
-	float speed = FVector::Dist(currentPos,lastPos) / (_dt*100);
-
+	//v=d/t
+	float speed = FVector::Dist(currentPos,lastPos) / _dt;
 	FVector predictedLocation  = currentPos + (dir* speed);
 
 	return  predictedLocation;

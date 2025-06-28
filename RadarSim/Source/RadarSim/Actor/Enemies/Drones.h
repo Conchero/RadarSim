@@ -19,6 +19,10 @@ public:
 
 	void Explode();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void SpawnNiagaraEmitter();
+
+
 	UFUNCTION(BlueprintCallable)
 	void SetMovementBoundingBox(class AActor* _boundingBox) ;
 
