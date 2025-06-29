@@ -27,8 +27,8 @@ ARadar::ARadar()
 	radarMesh->SetupAttachment(RootComponent);
 
 	actionArea = CreateDefaultSubobject<UStaticMeshComponent>("Action Area");
-	actionArea->SetupAttachment(RootComponent),
-		actionArea->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+	actionArea->SetupAttachment(RootComponent);
+	actionArea->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
 
 
 	decisionComponent = CreateDefaultSubobject<UDecisionComponent>("Decision Component");
@@ -75,10 +75,6 @@ void ARadar::Tick(float DeltaTime)
 
 	SetRadarAnalyserInfo(DeltaTime);
 
-	DrawDebugLine(GetWorld(), GetRadarZoneMainAxisPoints()[START], GetRadarZoneMainAxisPoints()[END], FColor::Green, false, -1, 0U, 10.f);
-	DrawDebugLine(GetWorld(), GetRadarZoneMainAxisPoints()[START], GetLeftRadarRotatedAxis(), FColor::Cyan, false, -1, 0U, 5.f);
-	DrawDebugLine(GetWorld(), GetRadarZoneMainAxisPoints()[START], GetRightRadarRotatedAxis(), FColor::Cyan, false, -1, 0U, 5.f);
-	
 }
 
 
@@ -115,29 +111,26 @@ void ARadar::SetRadarAnalyserInfo(float _dt)
 
 	if (radarAnalyser)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Red, FString::Printf(TEXT("radar")));
-
 		radarAnalyser->SetRadarAnaylserMaterialParameter(rotationSpeed, _dt);
 		if (decisionComponent)
 		{
 			TArray<FName> entriesName;
 			if (decisionComponent->GetSavedTargetEntries().Num() > 0)
 			{
+				//Make Short version of entry name for it to fit UI
 				for (AActor* entry : decisionComponent->GetSavedTargetEntries())
 				{
 					FString entryName = entry->GetName();
 
 					FString entryIDStart = "";
 					FString entryIDEnd = "";
+
 					for (int i = 0; i < 3; i++) {
 						entryIDStart.AppendChar(entryName[i]);
 						entryIDEnd.AppendChar(entryName[entryName.Len() - (i + 1)]);
 					}
+
 					entriesName.Add(FName(entryIDStart.Append(entryIDEnd)));
-
-
-					GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Red, FString::Printf(TEXT("%s"),*entryIDStart.Append(entryIDEnd)));
-
 				}
 
 			}
@@ -151,6 +144,7 @@ void ARadar::ResizeAreaActionVizualizer()
 	actionArea->SetWorldScale3D(FVector(1 * actionAreaDiameter_Meter, 1 * actionAreaDiameter_Meter, actionArea->GetComponentTransform().GetScale3D().Z));
 }
 
+//Main Axis
 TArray<FVector> ARadar::GetRadarZoneMainAxisPoints()
 {
 	FVector startPoint = radarMesh->GetComponentLocation();

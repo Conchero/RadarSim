@@ -23,6 +23,8 @@ protected:
 	bool CheckPresenceInActiveZone(FVector _noiseLocation);
 	float GetAngleFromMainAxisToDetectedNoise(FVector _noiseLocation);
 
+
+	// Radar analyser for visual feeback
 	UPROPERTY(EditAnywhere)
 	class ARadarAnalyser* radarAnalyser;
 	void SetRadarAnalyserInfo(float _dt);

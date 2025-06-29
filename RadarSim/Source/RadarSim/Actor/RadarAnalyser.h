@@ -20,6 +20,7 @@ public:
 
 	void SetSavedTargetNameArray(TArray<FName> _newArray) {savedTargetNameArray = _newArray;};
 
+	// Used in saved target UI to display target names
 	UFUNCTION(BlueprintPure,BlueprintCallable)
 	TArray<FName> GetSavedTargetNameArray() {return savedTargetNameArray;};
 
@@ -30,9 +31,9 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	class UStaticMeshComponent* consoleMesh;
-	
-	TArray<FName> savedTargetNameArray;
 
+	//Radar Saved Entries
+	TArray<FName> savedTargetNameArray;
 	UPROPERTY(EditAnywhere)
 	class UStaticMeshComponent* savedTargetVisualizerMesh;
 	UPROPERTY(EditInstanceOnly,BlueprintReadOnly)

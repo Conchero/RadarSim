@@ -20,13 +20,13 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	// Parasite Noise Filter
-	//void RemoveNoiseEntry(class AActor* _noise);
+	//Method used to filter out parasite noise after a certain time
 	void NoiseFilter(float _dt);
-	//void ConfirmTarget();
 
 	UFUNCTION()
 	void RemoveSavedEntry(class AActor* _actor);
+
+	//Used for visual feebacks
 	TArray<class AActor*> savedTargetEntries;
 
 public:

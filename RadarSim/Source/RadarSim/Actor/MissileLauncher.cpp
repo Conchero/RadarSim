@@ -158,11 +158,9 @@ void AMissileLauncher::LaunchMissile(AActor* _target)
 
 		if (missileToDestroy)
 		{
+			//Link the Saved Entry delegate
 			missileToDestroy->OnMissileDestroyed.AddUniqueDynamic(this, &AMissileLauncher::RemovedEntryOnDestroy);
 			missileToDestroy->SetTarget(_target);
-		}
-		else
-		{
 		}
 
 	}
@@ -179,7 +177,7 @@ void AMissileLauncher::Reload()
 	if (missileRelativeTransform.Num() <= 0)
 		return;
 
-
+	//Read Saved positions from Start() to initialize new rocket with same relative Transform
 	for (int i = 0; i < missileRelativeTransform.Num(); i++)
 	{
 		AMissile* missileToSpawn = GetWorld()->SpawnActor<AMissile>(missileType, missileRelativeTransform[i].GetLocation(), missileRelativeTransform[i].GetRotation().Rotator(), FActorSpawnParameters());

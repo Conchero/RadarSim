@@ -39,8 +39,6 @@ protected:
 	FVector currentTarget;
 	UPROPERTY(EditAnywhere)
 	float acceptanceRadius = 200;
-	UPROPERTY(EditAnywhere)
-	float droneSpeed = 200.f;
 	void RandomMovement(float _dt);
 	void ChooseNewLocation();
 

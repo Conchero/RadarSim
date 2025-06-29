@@ -57,16 +57,9 @@ protected:
 	UPROPERTY(EditAnywhere)
 	float initialImpulseForce_Meter = 2;
 
-	UPROPERTY(EditAnywhere)
-	float onGoingImpulseForce_Meter = 2;
-
-
-	UPROPERTY(EditAnywhere)
-	float fuel = 10.f;
-
+	//Used to get target direction
 	FVector lastTargetPos;
 	FVector lastMissilePos;
-
 
 	FVector GetPredictedLocation(FVector currentPos, FVector lastPos, float _dt);
 

@@ -55,6 +55,8 @@ void AMissile::BeginPlay()
 
 void AMissile::Destroyed()
 {
+	//Used to manage Saved target Entries* when missile explode it removes the linked target from it 
+	//*: Used for UI
 	OnMissileDestroyed.Broadcast(target);
 
 	Super::Destroyed();
@@ -67,7 +69,7 @@ void AMissile::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 
-	if (target && fuel > 0)
+	if (target)
 	{
 		FVector targetDirection = GetPredictedLocation(target->GetActorLocation(), lastTargetPos, DeltaTime);
 		FVector missileDirection = GetPredictedLocation(GetActorLocation(), lastMissilePos,DeltaTime);
@@ -95,6 +97,9 @@ void AMissile::Tick(float DeltaTime)
 
 FVector AMissile::GetPredictedLocation(FVector currentPos, FVector lastPos, float _dt)
 {
+
+	//Homing System
+	//TODO: Replace it with realistic system used in military rockets
 	FVector dir = (currentPos - lastPos);
 	//v=d/t
 	float speed = FVector::Dist(currentPos,lastPos) / _dt;
