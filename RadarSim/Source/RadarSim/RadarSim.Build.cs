@@ -15,7 +15,8 @@ public class RadarSim : ModuleRules
             "InputCore",
             "EnhancedInput",
             "AIModule",
-            "NavigationSystem"
+            "NavigationSystem",
+            "UMG"
         });
     }
 }

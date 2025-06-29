@@ -23,15 +23,9 @@ protected:
 	bool CheckPresenceInActiveZone(FVector _noiseLocation);
 	float GetAngleFromMainAxisToDetectedNoise(FVector _noiseLocation);
 
-
-	//Material Management
 	UPROPERTY(EditAnywhere)
-	class UStaticMeshComponent* radarVizualizerMesh;
-	class UMaterialInstanceDynamic* radarVizualizer_MT;
-	void SetMaterialParameters(float _dt);
-	float radarAngleDegrees = 0;
-	UPROPERTY(EditAnywhere)
-	float  radarVisualizerSpeedFactor;
+	class ARadarAnalyser* radarAnalyser;
+	void SetRadarAnalyserInfo(float _dt);
 
 public:
 	// Called every frame
@@ -40,6 +34,9 @@ public:
 	UFUNCTION(BlueprintCallable,BlueprintPure)
 	class UDecisionComponent* GetDecisionComponent() {return decisionComponent;};
 
+
+	UFUNCTION(BlueprintCallable)
+	void SetRadarAnalyser(class ARadarAnalyser* _ra) {radarAnalyser = _ra;};
 private:
 
 	//Used in editor to avoid resizing Action area by hand

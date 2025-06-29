@@ -4,7 +4,7 @@
 #include "../Actor/Radar.h"
 #include "Components/StaticMeshComponent.h"
 #include "../Components/DecisionComponent.h"
-#include "Materials/MaterialInstanceDynamic.h"
+#include "RadarAnalyser.h"
 
 
 // Easier to read than 0 and 1
@@ -33,8 +33,6 @@ ARadar::ARadar()
 
 	decisionComponent = CreateDefaultSubobject<UDecisionComponent>("Decision Component");
 
-	radarVizualizerMesh = CreateDefaultSubobject<UStaticMeshComponent>("Radar Visualizer Mesh");
-	radarVizualizerMesh->SetupAttachment(RootComponent);
 
 }
 
@@ -48,8 +46,6 @@ void ARadar::BeginPlay()
 
 	decisionComponent->SetRadar(this);
 
-	radarVizualizer_MT =  UMaterialInstanceDynamic::Create(radarVizualizerMesh->GetMaterial(0),this);
-	radarVizualizerMesh->SetMaterial(0, radarVizualizer_MT);
 }
 
 // Called every frame
@@ -77,11 +73,12 @@ void ARadar::Tick(float DeltaTime)
 	FRotator radarSpin = FRotator(radarMesh->GetComponentRotation().Pitch, radarMesh->GetComponentRotation().Yaw + (rotationSpeed * DeltaTime), radarMesh->GetComponentRotation().Roll);
 	radarMesh->SetWorldRotation(radarSpin);
 
+	SetRadarAnalyserInfo(DeltaTime);
+
 	DrawDebugLine(GetWorld(), GetRadarZoneMainAxisPoints()[START], GetRadarZoneMainAxisPoints()[END], FColor::Green, false, -1, 0U, 10.f);
 	DrawDebugLine(GetWorld(), GetRadarZoneMainAxisPoints()[START], GetLeftRadarRotatedAxis(), FColor::Cyan, false, -1, 0U, 5.f);
 	DrawDebugLine(GetWorld(), GetRadarZoneMainAxisPoints()[START], GetRightRadarRotatedAxis(), FColor::Cyan, false, -1, 0U, 5.f);
 	
-	SetMaterialParameters(DeltaTime);
 }
 
 
@@ -112,16 +109,41 @@ float ARadar::GetAngleFromMainAxisToDetectedNoise(FVector _noiseLocation)
 
 }
 
-void ARadar::SetMaterialParameters(float _dt)
+
+void ARadar::SetRadarAnalyserInfo(float _dt)
 {
-float deltaRotation = (rotationSpeed * radarVisualizerSpeedFactor) * _dt;
- radarAngleDegrees += deltaRotation;
- radarAngleDegrees = FMath::Fmod(radarAngleDegrees,360.f);
 
- float radarAngleRadians = FMath::DegreesToRadians(radarAngleDegrees);
+	if (radarAnalyser)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Red, FString::Printf(TEXT("radar")));
 
- radarVizualizer_MT->SetScalarParameterValue("RadarAngle", radarAngleRadians);
+		radarAnalyser->SetRadarAnaylserMaterialParameter(rotationSpeed, _dt);
+		if (decisionComponent)
+		{
+			TArray<FName> entriesName;
+			if (decisionComponent->GetSavedTargetEntries().Num() > 0)
+			{
+				for (AActor* entry : decisionComponent->GetSavedTargetEntries())
+				{
+					FString entryName = entry->GetName();
 
+					FString entryIDStart = "";
+					FString entryIDEnd = "";
+					for (int i = 0; i < 3; i++) {
+						entryIDStart.AppendChar(entryName[i]);
+						entryIDEnd.AppendChar(entryName[entryName.Len() - (i + 1)]);
+					}
+					entriesName.Add(FName(entryIDStart.Append(entryIDEnd)));
+
+
+					GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Red, FString::Printf(TEXT("%s"),*entryIDStart.Append(entryIDEnd)));
+
+				}
+
+			}
+			radarAnalyser->SetSavedTargetNameArray(entriesName);
+		}
+	}
 }
 
 void ARadar::ResizeAreaActionVizualizer()

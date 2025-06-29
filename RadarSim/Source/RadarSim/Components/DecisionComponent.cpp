@@ -11,6 +11,7 @@ UDecisionComponent::UDecisionComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
+
 }
 
 
@@ -38,17 +39,6 @@ void UDecisionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 
 	NoiseFilter(DeltaTime);
 
-	if (savedTargetEntries.Num() > 0)
-	{
-
-		for (AActor* entry : savedTargetEntries)
-		{
-			if (entry)
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 0.f, FColor::Emerald, FString::Printf(TEXT("%s at location %s"), *entry->GetName(), *entry->GetActorLocation().ToString()));
-			}
-		}
-	}
 
 }
 

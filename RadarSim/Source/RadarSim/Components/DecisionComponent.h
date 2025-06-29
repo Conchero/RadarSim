@@ -21,17 +21,17 @@ protected:
 	virtual void BeginPlay() override;
 
 	// Parasite Noise Filter
-	void RemoveNoiseEntry(class AActor* _noise);
+	//void RemoveNoiseEntry(class AActor* _noise);
 	void NoiseFilter(float _dt);
-	void ConfirmTarget();
+	//void ConfirmTarget();
 
-	TArray<class AActor*> savedTargetEntries;
 	UFUNCTION()
 	void RemoveSavedEntry(class AActor* _actor);
+	TArray<class AActor*> savedTargetEntries;
+
 public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
 
 
 	UFUNCTION(BlueprintCallable,BlueprintPure)
