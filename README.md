@@ -1,6 +1,6 @@
 ### Radar Simulator Project
 
-🟢 Find the build here [Drive Link](https://drive.google.com/drive/folders/1HKk3oIGKdJkL-PVvqBYg7qxeGiaAkuS0?usp=sharing) 🟢
+🟢 Find the build here [Drive Link](https://drive.google.com/drive/folders/17wASWNTws8MKOOcnxAVfKiZv5K6djrEc?usp=sharing) 🟢
 
 ---
 
@@ -38,7 +38,7 @@ So I went back to work and here you have this final version
 
 ### How Much Time ?
 
-With everything, including testing and enhancement between 12-17h 
+With everything, including testing and enhancement between 10-15h 
 
 ---
 
