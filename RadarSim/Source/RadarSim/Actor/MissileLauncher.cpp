@@ -5,6 +5,8 @@
 #include "Projectiles/Missile.h"
 #include "Components/SceneComponent.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "Projectiles/PNGMissile.h"
+#include "../Components/MissileGuidance.h"
 
 // Sets default values
 AMissileLauncher::AMissileLauncher()
@@ -159,8 +161,17 @@ void AMissileLauncher::LaunchMissile(AActor* _target)
 		if (missileToDestroy)
 		{
 			//Link the Saved Entry delegate
-			missileToDestroy->OnMissileDestroyed.AddUniqueDynamic(this, &AMissileLauncher::RemovedEntryOnDestroy);
-			missileToDestroy->SetTarget(_target);
+			missileToDestroy->Launch();
+
+			if (Cast<APNGMissile>(missileToDestroy))
+			{
+
+
+				Cast<APNGMissile>(missileToDestroy)->OnMissileDestroyed.AddUniqueDynamic(this, &AMissileLauncher::RemovedEntryOnDestroy);
+				Cast<APNGMissile>(missileToDestroy)->GetMissileGuidanceComponent()->SetTarget(_target);
+			}
+
+	
 		}
 
 	}

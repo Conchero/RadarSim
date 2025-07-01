@@ -7,7 +7,6 @@
 #include "Missile.generated.h"
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMissileDestroyed, class AActor*, _target);
 
 
 UCLASS()
@@ -19,16 +18,12 @@ public:
 	// Sets default values for this actor's properties
 	AMissile();
 
-	void OnTargetSent();
-
-	void SetTarget(class AActor* _target);
 
 	
 	void SetInitialImpulseForce(float _v) { initialImpulseForce_Meter = _v; };
 
-	FOnMissileDestroyed OnMissileDestroyed;
 
-	
+	void Launch();
 
 protected:
 	// Called when the game starts or when spawned
@@ -40,14 +35,13 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-
 protected:
 
 	class AActor* target;
 
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class UProjectileMovementComponent* projectileMovementComponent;
+
 	UPROPERTY(EditAnywhere)
 	class UStaticMeshComponent* missileMesh;
 
@@ -57,11 +51,6 @@ protected:
 	UPROPERTY(EditAnywhere)
 	float initialImpulseForce_Meter = 2;
 
-	//Used to get target direction
-	FVector lastTargetPos;
-	FVector lastMissilePos;
-
-	FVector GetPredictedLocation(FVector currentPos, FVector lastPos, float _dt);
 
 	UFUNCTION()
 	 void OnComponentBeginOverlap_Action(class UPrimitiveComponent* OverlappedComponent, class AActor* OtherActor ,class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
