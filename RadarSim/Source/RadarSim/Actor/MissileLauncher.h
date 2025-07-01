@@ -61,6 +61,8 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Missile")
 	TSubclassOf<class AMissile> missileType;
 
+
+	//Time before each missile launched
 	float fireRate = 0.f;
 	UPROPERTY(EditAnywhere)
 	float fireRateValue = 1.5f;

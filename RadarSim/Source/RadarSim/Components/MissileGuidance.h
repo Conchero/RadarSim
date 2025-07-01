@@ -23,9 +23,10 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+	//PNG Homing Function
 	void AimAtTarget(float _dt);
 
-
+	//PNG target
 	class AActor* target;
 	float ownerMaxSpeed;
 

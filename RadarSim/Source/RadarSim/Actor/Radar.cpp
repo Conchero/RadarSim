@@ -32,8 +32,6 @@ ARadar::ARadar()
 
 
 	decisionComponent = CreateDefaultSubobject<UDecisionComponent>("Decision Component");
-
-
 }
 
 // Called when the game starts or when spawned
@@ -53,6 +51,8 @@ void ARadar::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	//Trigger Actor Checks each x times depending of radar frequency 
+	//This is mainly to avoid calling heavy function each frame
 	radarFrequencyTimer += DeltaTime;
 	// T = 1/f 
 	if (radarFrequencyTimer >= 1 / radarFrequencyTimer)
@@ -72,12 +72,12 @@ void ARadar::Tick(float DeltaTime)
 
 		if (decisionComponent)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("inActiveZoneActors %d"), inActiveZoneActors.Num()));
 			decisionComponent->AddNoiseEntry(inActiveZoneActors);
 		}
 		radarFrequencyTimer = 0;
 	}
 
+	//Animation so needs to be ran each frame
 	FRotator radarSpin = FRotator(radarMesh->GetComponentRotation().Pitch, radarMesh->GetComponentRotation().Yaw + (rotationSpeed * DeltaTime), radarMesh->GetComponentRotation().Roll);
 	radarMesh->SetWorldRotation(radarSpin);
 	SetRadarAnalyserInfo(DeltaTime);

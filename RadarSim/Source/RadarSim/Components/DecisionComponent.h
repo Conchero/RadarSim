@@ -20,13 +20,10 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	//Method used to filter out parasite noise after a certain time
-	void NoiseFilter();
-
 	UFUNCTION()
 	void RemoveSavedEntry(class AActor* _actor);
 
-	//Used for visual feebacks
+	//Used for visaul feebacks and to not consider locked enemy as a new entry
 	TArray<class AActor*> savedTargetEntries;
 
 public:
@@ -34,49 +31,35 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 
-	UFUNCTION(BlueprintCallable,BlueprintPure)
-	TArray<class AActor*> GetSavedTargetEntries() {return savedTargetEntries;};
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	TArray<class AActor*> GetSavedTargetEntries() { return savedTargetEntries; };
 
 	void SetRadar(class ARadar* _radar) { detectionOwner = _radar; };
-	void SetMissileLauncher(class AMissileLauncher* _missileLauncher) {actionReceiver = _missileLauncher;};
+	void SetMissileLauncher(class AMissileLauncher* _missileLauncher) { actionReceiver = _missileLauncher; };
 
 	//Used By Radar
 	void AddNoiseEntry(TArray<class AActor*> _noise);
 
 private:
 
-//Actor for location and other info 
-//float for timer to filter noise
-TMap<class AActor*, int32> detectedNoiseMap;
-TArray<class AActor*> lastActorArray;
+	//Actor for location and other info 
+	//float for timer to filter noise
+	TMap<class AActor*, int32> detectedNoiseMap;
+	TArray<class AActor*> lastActorArray;
 
-UPROPERTY(EditAnywhere)
-int32 parasiteNoiseThreshold = -1;
 
-UPROPERTY(EditAnywhere)
-int32 lockedNoiseThreshold = 2;
+	//Amount of time before an actor is considered a parasite noise or a target
+	UPROPERTY(EditAnywhere)
+	int32 parasiteNoiseThreshold = -1;
+	UPROPERTY(EditAnywhere)
+	int32 lockedNoiseThreshold = 2;
 
-//Lock Parameters
-//UPROPERTY(EditAnywhere)
-//float timeBeforeLock = 3.f;
-TArray<class AActor*> lockedTargetArray;
-//TArray<class AActor*> aimedTargetArray;
 
-UPROPERTY(EditInstanceOnly)
-class ARadar* detectionOwner;
-UPROPERTY(EditInstanceOnly)
-class AMissileLauncher* actionReceiver;
+	UPROPERTY(EditInstanceOnly)
+	class ARadar* detectionOwner;
+	UPROPERTY(EditInstanceOnly)
+	class AMissileLauncher* actionReceiver;
 
-////Tag detected enemies to later find them
-//FString detectionTag = "detectedEntity";
-//int32 currentDetectedIndex = 1;
-//
-//
-////Noise Filter Parameter
-//UPROPERTY(EditAnywhere)
-//float noiseFilterTimerValue = 1.f;
-//float noiseFilterTimer = 0.f;
-//float noiseThreshold = noiseFilterTimerValue;
 
 
 

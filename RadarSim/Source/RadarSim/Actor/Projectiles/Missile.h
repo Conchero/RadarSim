@@ -21,14 +21,11 @@ public:
 
 	
 	void SetInitialImpulseForce(float _v) { initialImpulseForce_Meter = _v; };
-
-
 	void Launch();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
 	virtual void Destroyed() override;
 
 public:

@@ -6,13 +6,13 @@
 #include "Components/BoxComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "../Enemies/Drones.h"
+#include "../Enemies/EnemyEntity.h"
 #include "../../Components/MissileGuidance.h"
 
 // Sets default values
 AMissile::AMissile()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	RootComponent = CreateDefaultSubobject<USceneComponent>("RootComponent");
@@ -22,7 +22,7 @@ AMissile::AMissile()
 
 	missileMesh->SetCollisionResponseToAllChannels(ECR_Overlap);
 
-	boxCollision =CreateDefaultSubobject<UBoxComponent>("Box Collision");
+	boxCollision = CreateDefaultSubobject<UBoxComponent>("Box Collision");
 	boxCollision->SetupAttachment(RootComponent);
 	boxCollision->SetCollisionResponseToAllChannels(ECR_Overlap);
 
@@ -32,6 +32,7 @@ AMissile::AMissile()
 
 void AMissile::Launch()
 {
+	//project missile with given force at its forward vector
 	projectileMovementComponent->ProjectileGravityScale = 0.1;
 	projectileMovementComponent->AddForce((GetActorForwardVector() * (initialImpulseForce_Meter)));
 }
@@ -59,9 +60,9 @@ void AMissile::Tick(float DeltaTime)
 
 void AMissile::OnComponentBeginOverlap_Action(class UPrimitiveComponent* OverlappedComponent, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (Cast<ADrones>(OtherActor))
+	if (Cast<AEnemyEntity>(OtherActor))
 	{
-		Cast<ADrones>(OtherActor)->Destroy();
+		Cast<AEnemyEntity>(OtherActor)->Destroy();
 		Destroy();
 	}
 }

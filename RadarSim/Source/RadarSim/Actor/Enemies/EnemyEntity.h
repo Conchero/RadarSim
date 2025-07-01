@@ -6,6 +6,11 @@
 #include "GameFramework/Pawn.h"
 #include "EnemyEntity.generated.h"
 
+
+//Delegate to remove entity from spawn pool
+//Could have used this delegate to manage Radar Saved Entries
+// But I considered that the radar should not know if the entity aimed is an enemy or not 
+//(See PNG Missile Delegate Declaration for more info)
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEnemyDestroyed, class AEnemyEntity*, _e);
 
 UCLASS()
@@ -26,8 +31,5 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 };

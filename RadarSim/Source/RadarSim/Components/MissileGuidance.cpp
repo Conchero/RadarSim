@@ -10,6 +10,7 @@ UMissileGuidance::UMissileGuidance()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
+	//Tick Optimisation
 	PrimaryComponentTick.TickGroup = TG_PostPhysics;
 }
 
@@ -18,9 +19,6 @@ UMissileGuidance::UMissileGuidance()
 void UMissileGuidance::BeginPlay()
 {
 	Super::BeginPlay();
-
-	
-	
 }
 
 
@@ -31,7 +29,9 @@ void UMissileGuidance::AimAtTarget(float _dt)
 
 	if (target)
 	{
+		//Target predicted location in the next frame
 		FVector targetDirection = GetPredictedLocation(target->GetActorLocation(), lastTargetPos, _dt);
+		//Actor/Owner predicted location in the next frame
 		FVector missileDirection = GetPredictedLocation(GetOwner()->GetActorLocation(), lastMissilePos, _dt);
 
 		//Vector between target and missile location
@@ -40,10 +40,14 @@ void UMissileGuidance::AimAtTarget(float _dt)
 		float maxSpeed = (1 / ownerMaxSpeed) * 100;
 		//As the rocket approach target it slows down to get more precise
 		float absoluteDistWithTarget = FMath::Abs(FVector::Dist(GetOwner()->GetActorLocation(), target->GetActorLocation())) / maxSpeed;
+	
+		//Get the direction not location 
 		pushForce.Normalize();
 
+		// Rocket Movement
 		GetOwner()->SetActorLocation(GetOwner()->GetActorLocation() + (pushForce * absoluteDistWithTarget));
 
+		// For Visual purpose making the rocket "look" at the target
 		FRotator lookAtTarget = UKismetMathLibrary::FindLookAtRotation(GetOwner()->GetActorLocation(), target->GetActorLocation());
 		GetOwner()->SetActorRotation(lookAtTarget);
 
@@ -65,8 +69,7 @@ void UMissileGuidance::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 FVector UMissileGuidance::GetPredictedLocation(FVector currentPos, FVector lastPos, float _dt)
 {
 
-	//Homing System
-	//TODO: Replace it with realistic system used in military rockets
+	//PNG System
 	FVector dir = (currentPos - lastPos);
 	//v=d/t
 	float speed = FVector::Dist(currentPos, lastPos) / _dt;

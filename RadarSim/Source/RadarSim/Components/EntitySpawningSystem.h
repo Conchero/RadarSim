@@ -27,14 +27,13 @@ protected:
 	float spawnEntityTreshold = 2.f;
 	float spawnEntityTimer;
 
+	//max Pool size
 	UPROPERTY(EditAnywhere)
 	int32 maxEnemyInMap = 20.f;
 
-	//Replace Later for Root Enemy Classes
 	UPROPERTY(VisibleInstanceOnly)
 	TArray<class AEnemyEntity*> spawnedEntities;
 
-	//Replace Later for Root Enemy Classes
 	//This array is to pick a random entity 
 	//in an array of possibilities
 	UPROPERTY(EditAnywhere)
