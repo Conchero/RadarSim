@@ -4,14 +4,15 @@
 
 ---
 
-#### Overview
+### Overview
 
 Prototype of a Radar Simulator. This project was made with the objective to simulate the behavior of a Radar with a Decision Component which filters out parasite noises and keep potential targets.
 
 Once done the linked Missile Launcher if all conditions are right, fire a homing missile.
 
+---
 
-#### How to install ?
+### How to install ?
 
 After cloning the project, right click on the uproject icon and :
 
@@ -20,8 +21,10 @@ After cloning the project, right click on the uproject icon and :
 
  * If you just want to look at the editor
    * Just double click the uproject
+     
+---
 
-#### How was it made ?
+### How was it made ?
 
 After Setting Unreal environment I did the Class Diagram, then went into production for v1
 
@@ -31,12 +34,15 @@ Then I checked what could be upgraded, and found that ticks were saturated and t
 
 So I went back to work and here you have this final version
 
-#### How Much Time ?
+---
+
+### How Much Time ?
 
 With everything, including testing and enhancement between 12-17h 
 
+---
 
-#### Potential Upgrades
+### Potential Upgrades
 
 * The current radar visualiser doesn't register enemy "bips", I rather focus on stable and structured code but definitly something on my mind.
 
