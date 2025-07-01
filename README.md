@@ -16,10 +16,10 @@ Once done the linked Missile Launcher if all conditions are right, fire a homing
 After cloning the project, right click on the uproject icon and :
 
  * If you want to see the source
-  * Generate visual studio files
+   * Generate visual studio files
 
  * If you just want to look at the editor
-  * Just double click the uproject
+   * Just double click the uproject
 
 #### How was it made ?
 
