@@ -53,27 +53,35 @@ void ARadar::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-
-	// Filter actors outside action parameter
-	TArray<AActor*> overlappingActors;
-	actionArea->GetOverlappingActors(overlappingActors);
-
-	for (AActor* actor : overlappingActors)
+	radarFrequencyTimer += DeltaTime;
+	// T = 1/f 
+	if (radarFrequencyTimer >= 1 / radarFrequencyTimer)
 	{
-		if (CheckPresenceInActiveZone(actor->GetActorLocation()))
-		{
+		// Filter actors outside action parameter
+		TArray<AActor*> overlappingActors;
+		actionArea->GetOverlappingActors(overlappingActors);
+		TArray<AActor*> inActiveZoneActors;
 
-			if (decisionComponent)
+		for (AActor* actor : overlappingActors)
+		{
+			if (CheckPresenceInActiveZone(actor->GetActorLocation()))
 			{
-				decisionComponent->AddNoiseEntry(actor, DeltaTime);
+				inActiveZoneActors.Add(actor);
 			}
 		}
+
+		if (decisionComponent)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("inActiveZoneActors %d"), inActiveZoneActors.Num()));
+			decisionComponent->AddNoiseEntry(inActiveZoneActors);
+		}
+		radarFrequencyTimer = 0;
 	}
 
 	FRotator radarSpin = FRotator(radarMesh->GetComponentRotation().Pitch, radarMesh->GetComponentRotation().Yaw + (rotationSpeed * DeltaTime), radarMesh->GetComponentRotation().Roll);
 	radarMesh->SetWorldRotation(radarSpin);
-
 	SetRadarAnalyserInfo(DeltaTime);
+
 
 }
 

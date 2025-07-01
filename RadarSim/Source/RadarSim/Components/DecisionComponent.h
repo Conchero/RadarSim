@@ -21,7 +21,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	//Method used to filter out parasite noise after a certain time
-	void NoiseFilter(float _dt);
+	void NoiseFilter();
 
 	UFUNCTION()
 	void RemoveSavedEntry(class AActor* _actor);
@@ -41,16 +41,24 @@ public:
 	void SetMissileLauncher(class AMissileLauncher* _missileLauncher) {actionReceiver = _missileLauncher;};
 
 	//Used By Radar
-	void AddNoiseEntry(class AActor* _noise, float _dt);
+	void AddNoiseEntry(TArray<class AActor*> _noise);
+
 private:
 
 //Actor for location and other info 
 //float for timer to filter noise
-TMap<class AActor*, float> detectedNoiseMap;
+TMap<class AActor*, int32> detectedNoiseMap;
+TArray<class AActor*> lastActorArray;
+
+UPROPERTY(EditAnywhere)
+int32 parasiteNoiseThreshold = -1;
+
+UPROPERTY(EditAnywhere)
+int32 lockedNoiseThreshold = 2;
 
 //Lock Parameters
-UPROPERTY(EditAnywhere)
-float timeBeforeLock = 3.f;
+//UPROPERTY(EditAnywhere)
+//float timeBeforeLock = 3.f;
 TArray<class AActor*> lockedTargetArray;
 //TArray<class AActor*> aimedTargetArray;
 
@@ -59,16 +67,16 @@ class ARadar* detectionOwner;
 UPROPERTY(EditInstanceOnly)
 class AMissileLauncher* actionReceiver;
 
-//Tag detected enemies to later find them
-FString detectionTag = "detectedEntity";
-int32 currentDetectedIndex = 1;
-
-
-//Noise Filter Parameter
-UPROPERTY(EditAnywhere)
-float noiseFilterTimerValue = 1.f;
-float noiseFilterTimer = 0.f;
-float noiseThreshold = noiseFilterTimerValue;
+////Tag detected enemies to later find them
+//FString detectionTag = "detectedEntity";
+//int32 currentDetectedIndex = 1;
+//
+//
+////Noise Filter Parameter
+//UPROPERTY(EditAnywhere)
+//float noiseFilterTimerValue = 1.f;
+//float noiseFilterTimer = 0.f;
+//float noiseThreshold = noiseFilterTimerValue;
 
 
 

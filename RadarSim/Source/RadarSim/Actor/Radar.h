@@ -53,8 +53,14 @@ private:
 	float rotationSpeed = 0.08f;
 
 
+	//Radar Perf Optimisation
+	UPROPERTY(EditAnywhere)
+	float radarFrequency_HZ = 10;
+	float radarFrequencyTimer;
+
+
 	//Used a mesh to have a cylinder form
-	//Saw on wikipedia that action areas of radars where this shape
+	//Saw on wikipedia that action areas of radars where this shape was representated
 	UPROPERTY(EditAnywhere)
 	class UStaticMeshComponent* actionArea;
 	UPROPERTY(EditAnywhere)

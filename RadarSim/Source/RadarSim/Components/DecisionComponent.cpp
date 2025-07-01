@@ -10,7 +10,7 @@ UDecisionComponent::UDecisionComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
-	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.bCanEverTick = false;
 
 }
 
@@ -20,8 +20,8 @@ void UDecisionComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	noiseFilterTimer = noiseFilterTimerValue;
-	noiseThreshold = noiseFilterTimerValue;
+	//noiseFilterTimer = noiseFilterTimerValue;
+	//noiseThreshold = noiseFilterTimerValue;
 
 	if (actionReceiver)
 		actionReceiver->OnMissileSent.AddUniqueDynamic(this, &UDecisionComponent::RemoveSavedEntry);
@@ -37,123 +37,194 @@ void UDecisionComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	NoiseFilter(DeltaTime);
-
-
 }
 
-void UDecisionComponent::AddNoiseEntry(class AActor* _noise, float _dt)
+void UDecisionComponent::AddNoiseEntry(TArray<AActor*> _noiseArray)
 {
 
-	///
-	/// Logic :
-	/// Each Time the radar detect something it sends it to the decision component 
-	/// If a new entity is found then we add a tag to find it back 
-	/// If not a new entity add the delta time 
-	/// ---> Go to NoiseFilter() to continue
-	if (_noise)
+	/////
+	///// Logic :
+	///// Each Time the radar detect something it sends it to the decision component 
+	///// If a new entity is found then we add a tag to find it back 
+	///// If not a new entity add the delta time 
+	///// ---> Go to NoiseFilter() to continue
+	//if (_noise)
+	//{
+	//	bool newEntity = false;
+
+	//	//Checks if actor has detection tag
+	//	if (_noise->Tags.Num() <= 0)
+	//	{
+	//		newEntity = true;
+	//	}
+	//	else if (!_noise->Tags[0].ToString().Contains(detectionTag))
+	//	{
+	//		//TODO: if entity has !empty tag move it to last place
+	//		newEntity = true;
+	//	}
+
+	//	if (newEntity)
+	//	{
+	//		FName noiseTag = FName(detectionTag + "-" + FString::FromInt(currentDetectedIndex++));
+	//		if (_noise->Tags.Num() > 0)
+	//		{
+	//			_noise->Tags[0] = (noiseTag);
+	//		}
+	//		else
+	//		{
+	//			_noise->Tags.Add(noiseTag);
+	//		}
+	//		detectedNoiseMap.Emplace(_noise, 0.f);
+
+	//	}
+	//	else
+	//	{
+	//		for (auto& noiseElem : detectedNoiseMap)
+	//		{
+	//			AActor* noise = noiseElem.Key;
+	//			float noiseTime = noiseElem.Value;
+
+	//			if (_noise->Tags.Contains(noise->Tags[0]))
+	//			{
+	//				noiseTime += _dt;
+	//				noiseElem.Value = noiseTime;
+	//			}
+	//		}
+	//	}
+
+	//}
+
+
+
+
+	if (lastActorArray.Num() > 0)
 	{
-		bool newEntity = false;
-
-		//Checks if actor has detection tag
-		if (_noise->Tags.Num() <= 0)
+		TArray<AActor*> trackedNoiseArray;
+		TArray<AActor*> lostNoiseArray;
+		for (AActor* noise : _noiseArray)
 		{
-			newEntity = true;
-		}
-		else if (!_noise->Tags[0].ToString().Contains(detectionTag))
-		{
-			//TODO: if entity has !empty tag move it to last place
-			newEntity = true;
+			lastActorArray.Contains(noise) ? trackedNoiseArray.Add(noise) : lostNoiseArray.Add(noise);
 		}
 
-		if (newEntity)
+		for (AActor* trackedNoise : trackedNoiseArray)
 		{
-			FName noiseTag = FName(detectionTag + "-" + FString::FromInt(currentDetectedIndex++));
-			if (_noise->Tags.Num() > 0)
+			if (detectedNoiseMap.Contains(trackedNoise))
 			{
-				_noise->Tags[0] = (noiseTag);
+				detectedNoiseMap[trackedNoise]++;
 			}
-			else
+			else if (!detectedNoiseMap.Contains(trackedNoise)  && !savedTargetEntries.Contains(trackedNoise))
 			{
-				_noise->Tags.Add(noiseTag);
+				detectedNoiseMap.Add(trackedNoise);
 			}
-			detectedNoiseMap.Emplace(_noise, 0.f);
+		}
+
+		for (AActor* lostNoise : lostNoiseArray)
+		{
+			if (detectedNoiseMap.Contains(lostNoise))
+			{
+				detectedNoiseMap[lostNoise]--;
+			}
+		}
+
+		TArray<AActor*> noiseToRemoveArray;
+		TArray<AActor*> noiseToSendArray;
+		for (auto& noiseElem : detectedNoiseMap)
+		{
+			if (noiseElem.Value <= parasiteNoiseThreshold)
+			{
+				noiseToRemoveArray.Add(noiseElem.Key);
+			}
+
+			if (noiseElem.Value >= lockedNoiseThreshold)
+			{
+				noiseToSendArray.Add(noiseElem.Key);
+			}
+			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, FString::Printf(TEXT("%s detected %d"), *noiseElem.Key->GetName(), noiseElem.Value));
 
 		}
-		else
-		{
-			for (auto& noiseElem : detectedNoiseMap)
-			{
-				AActor* noise = noiseElem.Key;
-				float noiseTime = noiseElem.Value;
 
-				if (_noise->Tags.Contains(noise->Tags[0]))
-				{
-					noiseTime += _dt;
-					noiseElem.Value = noiseTime;
-				}
-			}
+
+		for (AActor* noiseToRemove : noiseToRemoveArray)
+		{
+			detectedNoiseMap.Remove(noiseToRemove);
+		}
+
+
+		for (AActor* noiseToSend : noiseToSendArray)
+		{
+			savedTargetEntries.Add(noiseToSend);
+			actionReceiver->ReceiveAction(noiseToSend);
+			detectedNoiseMap.Remove(noiseToSend);
 		}
 
 	}
+
+
+	if (_noiseArray.Num() <= 0)
+	{
+		detectedNoiseMap.Empty(0);
+	}
+
+
+	lastActorArray = _noiseArray;
 }
 
 
 
-void UDecisionComponent::NoiseFilter(float _dt)
+void UDecisionComponent::NoiseFilter()
 {
 
-	///
-	/// Logic :
-	///When the noise filter arrives at 0 we check if any noise detected was parasite 
-	/// If it is we remove it 
-	/// If it's we send it as a target
-	noiseFilterTimer -= _dt;
-	if (noiseFilterTimer <= 0.0)
-	{
-		if (detectedNoiseMap.Num() > 0)
-		{
-			//Arrays to allow dynamic shrinking
-			TArray<AActor*> toRemove;
-			TArray<AActor*> toSend;
-			for (auto& noiseElem : detectedNoiseMap)
-			{
-				AActor* noise = noiseElem.Key;
-				float noiseTime = noiseElem.Value;
+	/////
+	///// Logic :
+	/////When the noise filter arrives at 0 we check if any noise detected was parasite 
+	///// If it is we remove it 
+	///// If it's we send it as a target
+	//noiseFilterTimer -= _dt;
+	//if (noiseFilterTimer <= 0.0)
+	//{
+	//	if (detectedNoiseMap.Num() > 0)
+	//	{
+	//		//Arrays to allow dynamic shrinking
+	//		TArray<AActor*> toRemove;
+	//		TArray<AActor*> toSend;
+	//		for (auto& noiseElem : detectedNoiseMap)
+	//		{
+	//			AActor* noise = noiseElem.Key;
+	//			float noiseTime = noiseElem.Value;
 
-				//If actor disappear (wasn't detected any more by radar) 
-				// noise time should be under noise Threshold/(2)->security to not remove potential target
-				if (noiseTime <= noiseThreshold / 2)
-				{
-					toRemove.Add(noise);
-				}
-				else
-				{
-					toSend.Add(noise);
-				}
-
-
-
-			}
+	//			//If actor disappear (wasn't detected any more by radar) 
+	//			// noise time should be under noise Threshold/(2)->security to not remove potential target
+	//			if (noiseTime <= noiseThreshold / 2)
+	//			{
+	//				toRemove.Add(noise);
+	//			}
+	//			else
+	//			{
+	//				toSend.Add(noise);
+	//			}
 
 
-			for (AActor* noise : toRemove)
-			{
-				noise->Tags.RemoveAt(0);
-				detectedNoiseMap.Remove(noise);
-			}
 
-			for (AActor* target : toSend)
-			{
-				savedTargetEntries.Add(target);
-				actionReceiver->ReceiveAction(target);
-			}
+	//		}
 
-			detectedNoiseMap.Empty(0);
 
-		}
-		noiseFilterTimer = noiseFilterTimerValue;
-	}
+	//		for (AActor* noise : toRemove)
+	//		{
+	//			noise->Tags.RemoveAt(0);
+	//			detectedNoiseMap.Remove(noise);
+	//		}
+
+	//		for (AActor* target : toSend)
+	//		{
+	//			savedTargetEntries.Add(target);
+	//			actionReceiver->ReceiveAction(target);
+	//		}
+
+	//		detectedNoiseMap.Empty(0);
+
+	//	}
+	//	noiseFilterTimer = noiseFilterTimerValue;
+	//}
 
 
 }
