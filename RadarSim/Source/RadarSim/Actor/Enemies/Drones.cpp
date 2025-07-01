@@ -35,9 +35,9 @@ void ADrones::Explode()
 	Destroy();
 }
 
-void ADrones::SetMovementBoundingBox(class AActor* _boundingBox)
+void ADrones::SetMovementBoundingBox(UBoxComponent* _boundingBox)
 {
-	movementBoundingBox = _boundingBox; 
+	movementBoundingBox = _boundingBox;
 	ChooseNewLocation();
 }
 
@@ -70,11 +70,15 @@ void ADrones::ChooseNewLocation()
 {
 	//Get Random Point in Map Collision Box
 	if (movementBoundingBox) {
-		if (movementBoundingBox->GetComponentByClass<UBoxComponent>())
-		{
-			currentTarget = UKismetMathLibrary::RandomPointInBoundingBox(movementBoundingBox->GetActorLocation(), movementBoundingBox->GetComponentByClass<UBoxComponent>()->GetScaledBoxExtent());
-		}
+		currentTarget = UKismetMathLibrary::RandomPointInBoundingBox(movementBoundingBox->GetOwner()->GetActorLocation(), movementBoundingBox->GetScaledBoxExtent());
 	}
+}
+
+void ADrones::Destroyed()
+{
+	Explode();
+	OnDroneDestroyed.Broadcast(this);
+	Super::Destroyed();
 }
 
 // Called every frame

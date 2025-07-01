@@ -6,6 +6,13 @@
 #include "GameFramework/Actor.h"
 #include "Drones.generated.h"
 
+//Delegate to remove entity from spawn pool
+//Could have used this delegate to manage Radar Saved Entries
+// But I considered that the radar should not know if the entity aimed is an enemy or not 
+//(See PNG Missile Delegate Declaration for more info)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDroneDestroyed, class ADrones*, _drone);
+
+
 UCLASS()
 class RADARSIM_API ADrones : public APawn
 {
@@ -15,16 +22,12 @@ public:
 	// Sets default values for this actor's properties
 	ADrones();
 
-
+	FOnDroneDestroyed OnDroneDestroyed;
 
 	void Explode();
 
-	UFUNCTION(BlueprintImplementableEvent)
-	void SpawnNiagaraEmitter();
-
-
 	UFUNCTION(BlueprintCallable)
-	void SetMovementBoundingBox(class AActor* _boundingBox) ;
+	void SetMovementBoundingBox(class UBoxComponent* _boundingBox) ;
 
 protected:
 	// Called when the game starts or when spawned
@@ -32,7 +35,7 @@ protected:
 
 	//To fill in BP 
 	UPROPERTY(EditInstanceOnly)
-	class AActor* movementBoundingBox;
+	class UBoxComponent* movementBoundingBox;
 
 
 	//Drone Fly Attribute
@@ -41,6 +44,8 @@ protected:
 	float acceptanceRadius = 200;
 	void RandomMovement(float _dt);
 	void ChooseNewLocation();
+
+	virtual void Destroyed() override;
 
 protected:
 	// Called every frame

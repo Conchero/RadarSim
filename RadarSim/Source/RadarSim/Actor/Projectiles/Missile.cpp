@@ -61,7 +61,7 @@ void AMissile::OnComponentBeginOverlap_Action(class UPrimitiveComponent* Overlap
 {
 	if (Cast<ADrones>(OtherActor))
 	{
-		Cast<ADrones>(OtherActor)->Explode();
+		Cast<ADrones>(OtherActor)->Destroy();
 		Destroy();
 	}
 }
