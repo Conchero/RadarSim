@@ -4,19 +4,19 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "DroneSpawningSystem.generated.h"
+#include "EntitySpawningSystem.generated.h"
 
 
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class RADARSIM_API UDroneSpawningSystem : public UActorComponent
+class RADARSIM_API UEntitySpawningSystem : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
 	// Sets default values for this component's properties
-	UDroneSpawningSystem();
+	UEntitySpawningSystem();
 
 protected:
 	// Called when the game starts
@@ -32,19 +32,19 @@ protected:
 
 	//Replace Later for Root Enemy Classes
 	UPROPERTY(VisibleInstanceOnly)
-	TArray<class ADrones*> spawnedEntities;
+	TArray<class AEnemyEntity*> spawnedEntities;
 
 	//Replace Later for Root Enemy Classes
 	//This array is to pick a random entity 
 	//in an array of possibilities
 	UPROPERTY(EditAnywhere)
-	TArray<TSubclassOf<class ADrones>> spawnableEntitiesArray;
+	TArray<TSubclassOf<class AEnemyEntity>> spawnableEntitiesArray;
 
 	class UBoxComponent* spawnableArea;
 
 
 	UFUNCTION()
-	void RemoveEntityFromPool(class ADrones* _target);
+	void RemoveEntityFromPool(class AEnemyEntity* _target);
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

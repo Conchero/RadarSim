@@ -77,7 +77,6 @@ void ADrones::ChooseNewLocation()
 void ADrones::Destroyed()
 {
 	Explode();
-	OnDroneDestroyed.Broadcast(this);
 	Super::Destroyed();
 }
 

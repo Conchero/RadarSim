@@ -3,18 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "EnemyEntity.h"
 #include "Drones.generated.h"
 
 //Delegate to remove entity from spawn pool
 //Could have used this delegate to manage Radar Saved Entries
 // But I considered that the radar should not know if the entity aimed is an enemy or not 
 //(See PNG Missile Delegate Declaration for more info)
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDroneDestroyed, class ADrones*, _drone);
 
 
 UCLASS()
-class RADARSIM_API ADrones : public APawn
+class RADARSIM_API ADrones : public AEnemyEntity
 {
 	GENERATED_BODY()
 
@@ -22,7 +21,6 @@ public:
 	// Sets default values for this actor's properties
 	ADrones();
 
-	FOnDroneDestroyed OnDroneDestroyed;
 
 	void Explode();
 

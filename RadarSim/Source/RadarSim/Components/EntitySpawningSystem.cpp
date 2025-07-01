@@ -1,13 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "../Components/DroneSpawningSystem.h"
+#include "../Components/EntitySpawningSystem.h"
 #include "Components/BoxComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "../Actor/Enemies/EnemyEntity.h"
 #include "../Actor/Enemies/Drones.h"
 
 // Sets default values for this component's properties
-UDroneSpawningSystem::UDroneSpawningSystem()
+UEntitySpawningSystem::UEntitySpawningSystem()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -18,7 +19,7 @@ UDroneSpawningSystem::UDroneSpawningSystem()
 
 
 // Called when the game starts
-void UDroneSpawningSystem::BeginPlay()
+void UEntitySpawningSystem::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -31,27 +32,27 @@ void UDroneSpawningSystem::BeginPlay()
 	}
 
 	// ...
-	
+
 }
 
 
-void UDroneSpawningSystem::RemoveEntityFromPool(class ADrones* _target)
+void UEntitySpawningSystem::RemoveEntityFromPool(class AEnemyEntity* _target)
 {
 	if (spawnedEntities.Num() <= 0)
-	return;
+		return;
 
 
 	spawnedEntities.RemoveAt(spawnedEntities.Find(_target));
 }
 
 // Called every frame
-void UDroneSpawningSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UEntitySpawningSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 
 	if (!spawnableArea || spawnedEntities.Num() >= maxEnemyInMap)
-	return;
+		return;
 
 
 	spawnEntityTimer += DeltaTime;
@@ -59,14 +60,16 @@ void UDroneSpawningSystem::TickComponent(float DeltaTime, ELevelTick TickType, F
 	if (spawnEntityTimer >= spawnEntityTreshold)
 	{
 		FVector pointInBoundingBox = UKismetMathLibrary::RandomPointInBoundingBox(GetOwner()->GetActorLocation(), spawnableArea->GetScaledBoxExtent());
-		int32 randomEntity = FMath::Floor(FMath::RandRange(0,spawnableEntitiesArray.Num()-1));
+		int32 randomEntity = FMath::Floor(FMath::RandRange(0, spawnableEntitiesArray.Num() - 1));
 		randomEntity = randomEntity < spawnableEntitiesArray.Num() ? randomEntity : 0;
-		ADrones* newDrone = GetWorld()->SpawnActor<ADrones>(spawnableEntitiesArray[randomEntity], pointInBoundingBox,FRotator::ZeroRotator);
-		newDrone->OnDroneDestroyed.AddUniqueDynamic(this,&UDroneSpawningSystem::RemoveEntityFromPool);
-		newDrone->SetMovementBoundingBox(spawnableArea);
+		AEnemyEntity* newEntity = GetWorld()->SpawnActor<AEnemyEntity>(spawnableEntitiesArray[randomEntity], pointInBoundingBox, FRotator::ZeroRotator);
+		newEntity->OnEnemyDestroyed.AddUniqueDynamic(this, &UEntitySpawningSystem::RemoveEntityFromPool);
+
+		if (Cast<ADrones>(newEntity))
+			Cast<ADrones>(newEntity)->SetMovementBoundingBox(spawnableArea);
 
 
-		spawnedEntities.Add(newDrone);
+		spawnedEntities.Add(newEntity);
 
 		spawnEntityTimer = 0;
 	}
